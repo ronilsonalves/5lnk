@@ -15,10 +15,12 @@ type linkRepository struct {
 	db *gorm.DB
 }
 
+// NewLinkRepository creates a new link repository
 func NewLinkRepository(db *gorm.DB) Repository {
 	return &linkRepository{db: db}
 }
 
+// FindByOriginal finds a link by the original URL
 func (r *linkRepository) FindByOriginal(original string) (*domain.Link, error) {
 	var link domain.Link
 	if err := r.db.Where("original = ?", original).First(&link).Error; err != nil {
@@ -27,6 +29,7 @@ func (r *linkRepository) FindByOriginal(original string) (*domain.Link, error) {
 	return &link, nil
 }
 
+// FindByShortened finds a link by the shortened URL
 func (r *linkRepository) FindByShortened(shortened string) (*domain.Link, error) {
 	var link domain.Link
 	if err := r.db.Where("shortened = ?", shortened).First(&link).Error; err != nil {
@@ -35,6 +38,7 @@ func (r *linkRepository) FindByShortened(shortened string) (*domain.Link, error)
 	return &link, nil
 }
 
+// Create creates a new shortened URL
 func (r *linkRepository) Create(link *domain.Link) error {
 	return r.db.Create(link).Error
 }

@@ -15,10 +15,12 @@ type linkService struct {
 	repo Repository
 }
 
+// NewLinkService creates a new link service
 func NewLinkService(repo Repository) Service {
 	return &linkService{repo: repo}
 }
 
+// ShortenURL creates a new shortened URL
 func (s *linkService) ShortenURL(request web.ShortenURL) (domain.Link, error) {
 	// Check if the URL already exists in the database
 	link, err := s.repo.FindByOriginal(request.URL)
@@ -44,6 +46,7 @@ func (s *linkService) ShortenURL(request web.ShortenURL) (domain.Link, error) {
 	return *link, nil
 }
 
+// GetOriginalURL returns the original URL from the shortened URL
 func (s *linkService) GetOriginalURL(shortened string) (string, error) {
 	link, err := s.repo.FindByShortened(shortened)
 	if err != nil {
