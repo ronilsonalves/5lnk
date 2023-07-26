@@ -1,0 +1,6 @@
+# Ingore files at build time
+frontend
+.env.example
+.dockerignore
+.gitignore
+.DS_Store
