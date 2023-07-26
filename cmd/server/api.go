@@ -15,6 +15,7 @@ import (
 	"github.com/swaggo/gin-swagger" // gin-swagger middleware
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"time"
 )
@@ -68,6 +69,14 @@ func main() {
 	r.GET("/swagger/*any",
 		ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	// Health check endpoint
+	r.GET("/",
+		cache.CachePageWithoutQuery(store, time.Minute, func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Everything is okay here",
+			})
+		}))
+
 	api := r.Group("/api/v1")
 	{
 		links := api.Group("/links")
@@ -76,6 +85,7 @@ func main() {
 				cache.CachePageWithoutQuery(store, time.Minute, h.PostURL()))
 		}
 	}
+
 	r.GET(":shortened",
 		cache.CachePageWithoutQuery(store, time.Minute, h.RedirectShortenedURL()))
 
