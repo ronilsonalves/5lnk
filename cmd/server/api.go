@@ -58,7 +58,7 @@ func main() {
 
 	r := gin.New()
 	r.Use(gin.Recovery(), gin.Logger(), cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:3000", "http://localhost:8080", "5link.live", "www.5link.live"},
+		AllowOrigins: []string{"http://localhost:3000", "http://localhost:8080", "https://5link.live", "https://www.5link.live"},
 		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders: []string{"Origin"},
 	}))
