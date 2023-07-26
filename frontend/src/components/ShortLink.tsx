@@ -1,11 +1,17 @@
 "use client";
 import { useState } from "react";
 
+declare global {
+  interface Window {
+    short_url_form: any;
+  }
+}
+
 export default function ShortLink() {
   const [shortUrl, setShortUrl] = useState("");
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const handleSubmit = async (e: Event) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const response = await fetch(process.env.NEXT_PUBLIC_API_URL+"links", {
@@ -14,7 +20,7 @@ export default function ShortLink() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        url: e.target.url.value,
+        url: (e.target as HTMLFormElement).url.value,
         domain: "5lnk.me",
       }),
     });
@@ -22,12 +28,12 @@ export default function ShortLink() {
     if (response.status === 201) {
       const data = await response.json();
       setShortUrl(data.FinalURL);
-      e.target.reset();
+      (e.target as HTMLFormElement).reset();
       window.short_url_form.close();
     }
   };
 
-  const handleCopy = async (e: Event) => {
+  const handleCopy = async (e: React.MouseEvent<Element, MouseEvent>) => {
     e.preventDefault();
     await navigator.clipboard.writeText(shortUrl);
     setCopySuccess(true);
