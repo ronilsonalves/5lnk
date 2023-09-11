@@ -48,6 +48,172 @@ func (h *linkHandler) PostURL() gin.HandlerFunc {
 	}
 }
 
+// GetLink returns a shortened link.
+// @BasePath /api/v1
+// GetURL godoc
+// @Summary Get a shortened link from a URL address and a provided alias
+// @Schemes
+// @Description Get a shortened link from a long URL.
+// @Tags Links
+// @Accept json
+// @Produce json
+// @Param id path string true "Link ID"
+// @Success 200 {object} domain.Link
+// @Failure 400 {object} web.errorResponse
+// @Router /api/v1/links/{id} [GET]
+func (h *linkHandler) GetLink() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id := ctx.Param("id")
+		response, err := h.s.GetLink(id)
+		if err != nil {
+			web.BadResponse(ctx, http.StatusBadRequest, "error", err.Error())
+			return
+		}
+
+		web.ResponseOK(ctx, http.StatusOK, response)
+	}
+}
+
+// Update update a shortened link.
+// @BasePath /api/v1
+// Update godoc
+// @Summary Update a shortened link from a URL address and a provided alias
+// @Schemes
+// @Description Update a shortened link from a long URL.
+// @Tags Links
+// @Accept json
+// @Produce json
+// @Param body body web.ShortenedURL true "Body"
+// @Success 200 {object} domain.Link
+// @Failure 400 {object} web.errorResponse
+// @Failure 404 {object} web.errorResponse
+// @Router /api/v1/links [PUT]
+func (h *linkHandler) Update() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var request web.ShortenedURL
+		err := ctx.ShouldBindJSON(&request)
+		if err != nil {
+			web.BadResponse(ctx, http.StatusBadRequest, "error", "invalid request body provided")
+			return
+		}
+		response, err := h.s.Update(request)
+		if err != nil {
+			web.BadResponse(ctx, http.StatusNotFound, "error", err.Error())
+			return
+		}
+
+		web.ResponseOK(ctx, http.StatusOK, response)
+	}
+}
+
+// CountLinksByUser counts the number of shortened links by user.
+// @BasePath /api/v1
+// CountLinksByUser godoc
+// @Summary Count the number of shortened links by user
+// @Schemes
+// @Description Count the number of shortened links by user.
+// @Tags Links
+// @Accept json
+// @Produce json
+// @Param userId path string true "User ID"
+// @Success 200 {object} int64
+// @Failure 400 {object} web.errorResponse
+// @Router /api/v1/links/user/{userId}/count [GET]
+func (h *linkHandler) CountLinksByUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userID := ctx.Param("userId")
+		response, err := h.s.CountLinksByUser(userID)
+		if err != nil {
+			web.BadResponse(ctx, http.StatusBadRequest, "error", err.Error())
+			return
+		}
+
+		web.ResponseOK(ctx, http.StatusOK, response)
+	}
+}
+
+// CountLinkClicksByUser counts the number of clicks by user.
+// @BasePath /api/v1
+// CountLinkClicksByUser godoc
+// @Summary Count the number of clicks by user
+// @Schemes
+// @Description Count the number of clicks by user.
+// @Tags Links
+// @Accept json
+// @Produce json
+// @Param userId path string true "User ID"
+// @Success 200 {object} int64
+// @Failure 400 {object} web.errorResponse
+// @Router /api/v1/links/user/{userId}/clicks [GET]
+func (h *linkHandler) CountLinkClicksByUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userID := ctx.Param("userId")
+		response, err := h.s.CountLinkClicksByUser(userID)
+		if err != nil {
+			web.BadResponse(ctx, http.StatusBadRequest, "error", err.Error())
+			return
+		}
+
+		web.ResponseOK(ctx, http.StatusOK, response)
+	}
+}
+
+// Delete delete a shortened link.
+// @BasePath /api/v1
+// Delete godoc
+// @Summary Delete a shortened link from a URL address and a provided alias
+// @Schemes
+// @Description Delete a shortened link from a long URL.
+// @Tags Links
+// @Accept json
+// @Produce json
+// @Param body body web.ShortenedURL true "Body"
+// @Success 204
+// @Failure 400 {object} web.errorResponse
+// @Failure 404 {object} web.errorResponse
+// @Router /api/v1/links [DELETE]
+func (h *linkHandler) Delete() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var request web.ShortenedURL
+		err := ctx.ShouldBindJSON(&request)
+		if err != nil {
+			web.BadResponse(ctx, http.StatusBadRequest, "error", "invalid request body provided")
+			return
+		}
+		if err := h.s.Delete(request); err != nil {
+			web.BadResponse(ctx, http.StatusNotFound, "error", err.Error())
+			return
+		}
+
+		web.ResponseOK(ctx, http.StatusNoContent, nil)
+	}
+}
+
+// GetAllByUser returns all shortened links by user.
+// @BasePath /api/v1
+// GetAllByUser godoc
+// @Summary Get all shortened links by user
+// @Schemes
+// @Description Get all shortened links by user.
+// @Tags Links
+// @Accept json
+// @Produce json
+// @Param userId path string true "User ID"
+// @Success 200 {object} []domain.Link
+// @Failure 400 {object} web.errorResponse
+// @Router /api/v1/links/user/{userId} [GET]
+func (h *linkHandler) GetAllByUser() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userID := ctx.Param("userId")
+		response, err := h.s.GetAllByUser(userID)
+		if err != nil {
+			web.BadResponse(ctx, http.StatusBadRequest, "error", err.Error())
+			return
+		}
+		web.ResponseOK(ctx, http.StatusOK, response)
+	}
+}
+
 // RedirectShortenedURL redirect to original URL from a shortened link.
 // @BasePath /
 // RedirectShortenedURL godoc
@@ -64,7 +230,6 @@ func (h *linkHandler) PostURL() gin.HandlerFunc {
 func (h *linkHandler) RedirectShortenedURL() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		shortened := ctx.Param("shortened")
-
 		original, err := h.s.GetOriginalURL(shortened)
 		if err != nil {
 			web.BadResponse(ctx, http.StatusNotFound, "error", "link not found")
