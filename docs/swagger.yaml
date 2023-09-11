@@ -1,14 +1,27 @@
 definitions:
   domain.Link:
     properties:
-      finalURL:
+      clicks:
+        type: integer
+      createdAt:
+        type: string
+      finalUrl:
         type: string
       id:
-        type: integer
+        type: string
       original:
         type: string
       shortened:
         type: string
+      userId:
+        type: string
+    type: object
+  web.APIKey:
+    properties:
+      userId:
+        type: string
+    required:
+    - userId
     type: object
   web.ShortenURL:
     properties:
@@ -18,8 +31,26 @@ definitions:
         type: string
       url:
         type: string
+      userId:
+        type: string
     required:
     - url
+    type: object
+  web.ShortenedURL:
+    properties:
+      id:
+        type: string
+      original:
+        type: string
+      shortened:
+        type: string
+      userId:
+        type: string
+    required:
+    - id
+    - original
+    - shortened
+    - userId
     type: object
   web.errorResponse:
     properties:
@@ -36,12 +67,12 @@ info:
   contact:
     name: Ronilson Alves
     url: https://www.linkedin.com/in/ronilsonalves
-  description: This API provide endpoints to link shortning.
+  description: This API provide endpoints to link shortening.
   license:
     name: MIT
-    url: https://github.com/ronilsonalves/go-lnk/blob/main/LICENSE.md
-  termsOfService: https://github.com/ronilsonalves/go-lnk/blog/main/LICENSE.md
-  title: Go lnk API
+    url: https://github.com/ronilsonalves/5lnk/blob/main/LICENSE.md
+  termsOfService: https://github.com/ronilsonalves/5lnk/blog/main/LICENSE.md
+  title: 5lnk API
   version: "1.0"
 paths:
   /{shortened}:
@@ -69,7 +100,120 @@ paths:
       summary: Redirect to original URL
       tags:
       - Links
+  /api/v1/apikeys:
+    post:
+      consumes:
+      - application/json
+      description: Create a new API Key. If the user already has an API Key, it will
+        be revoked.
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/web.APIKey'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Create a new API Key
+      tags:
+      - API Keys
+  /api/v1/apikeys/{userId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an API Key.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Delete an API Key
+      tags:
+      - API Keys
+    get:
+      consumes:
+      - application/json
+      description: Retrieve an API Key.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Retrieve an API Key
+      tags:
+      - API Keys
   /api/v1/links:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a shortened link from a long URL.
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/web.ShortenedURL'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Delete a shortened link from a URL address and a provided alias
+      tags:
+      - Links
     post:
       consumes:
       - application/json
@@ -93,6 +237,137 @@ paths:
           schema:
             $ref: '#/definitions/web.errorResponse'
       summary: Create a shortened link from a URL address and a provided alias
+      tags:
+      - Links
+    put:
+      consumes:
+      - application/json
+      description: Update a shortened link from a long URL.
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/web.ShortenedURL'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Link'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Update a shortened link from a URL address and a provided alias
+      tags:
+      - Links
+  /api/v1/links/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a shortened link from a long URL.
+      parameters:
+      - description: Link ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Link'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Get a shortened link from a URL address and a provided alias
+      tags:
+      - Links
+  /api/v1/links/user/{userId}:
+    get:
+      consumes:
+      - application/json
+      description: Get all shortened links by user.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Link'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Get all shortened links by user
+      tags:
+      - Links
+  /api/v1/links/user/{userId}/clicks:
+    get:
+      consumes:
+      - application/json
+      description: Count the number of clicks by user.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Count the number of clicks by user
+      tags:
+      - Links
+  /api/v1/links/user/{userId}/count:
+    get:
+      consumes:
+      - application/json
+      description: Count the number of shortened links by user.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Count the number of shortened links by user
       tags:
       - Links
 swagger: "2.0"
