@@ -98,6 +98,10 @@ func main() {
 			c.Redirect(http.StatusMovedPermanently, "https://www.5lnk.live/?source=api")
 		}))
 
+	// Redirect to the original URL
+	r.GET(":shortened",
+		cache.CachePage(inMemory, time.Minute*5, h.RedirectShortenedURL()))
+
 	// User authentication
 	r.Use(middleware.Authenticate(ctx, app))
 	// API v1
@@ -114,8 +118,6 @@ func main() {
 		{
 			links.POST("", h.PostURL())
 			links.PUT("", h.Update())
-			links.GET("",
-				cache.CachePage(inMemory, time.Minute, h.GetAll()))
 			links.GET(":id",
 				cache.CachePage(inMemory, time.Minute, h.GetLink()))
 			links.DELETE("", h.Delete())
@@ -129,10 +131,6 @@ func main() {
 				h.CountLinkClicksByUser())
 		}
 	}
-
-	// Redirect to the original URL
-	r.GET(":shortened",
-		cache.CachePage(inMemory, time.Minute*5, h.RedirectShortenedURL()))
 
 	// Start the HTTP server
 	if err := r.Run(":8080"); err != nil {

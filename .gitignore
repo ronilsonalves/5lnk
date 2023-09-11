@@ -3,3 +3,4 @@
 /pkg/middleware/firebase.json
 .DS_Store
 fly.toml
+env/firebase.json
