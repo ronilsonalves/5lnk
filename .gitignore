@@ -1,2 +1,5 @@
 /.env
 /.idea
+/pkg/middleware/firebase.json
+.DS_Store
+fly.toml
