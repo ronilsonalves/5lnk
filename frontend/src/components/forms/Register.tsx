@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
 import { useLoadingCallback } from "react-loading-hook";
 import {
   createUserWithEmailAndPassword,
@@ -10,8 +12,12 @@ import {
 } from "firebase/auth";
 import { ValidationError, object, ref, string } from "yup";
 import { useFirebaseAuth } from "@/auth/firebase";
+import {
+  getGithubProvider,
+  getGoogleProvider,
+  loginWithProvider,
+} from "@/app/auth/login/firebase";
 
-import Logo from "@/components/Logo";
 import { FirebaseError } from "firebase/app";
 
 interface UserRegisterFormData {
@@ -20,7 +26,7 @@ interface UserRegisterFormData {
   email: string;
   password: string;
   passwordConfirm: string;
-};
+}
 
 let userRegistrationValidationSchema = object({
   firstName: string()
@@ -67,8 +73,8 @@ export default function Register() {
     }));
   };
 
-  const [registerWithEmailAndPassword, isRegisterLoading] =
-    useLoadingCallback(async (event: React.FormEvent<HTMLFormElement>) => {
+  const [registerWithEmailAndPassword, isRegisterLoading] = useLoadingCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       const auth = getFirebaseAuth();
@@ -127,7 +133,10 @@ export default function Register() {
               setFirebaseAuthError("Weak password!");
               break;
             default:
-              setFirebaseAuthError("An error occurred while trying to register your account: "+err.code);
+              setFirebaseAuthError(
+                "An error occurred while trying to register your account: " +
+                  err.code
+              );
               break;
           }
           setTimeout(() => {
@@ -135,7 +144,62 @@ export default function Register() {
           }, 3000);
         }
       }
+    }
+  );
+
+  const [handleLoginWithGoogle, isGoogleLoginLoading, googleLoginError] =
+    useLoadingCallback(async () => {
+      const auth = getFirebaseAuth();
+      try {
+        const user = await loginWithProvider(auth, getGoogleProvider(auth));
+        const idTokenResult = await user.getIdTokenResult();
+        await fetch("/api/login", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${idTokenResult.token}`,
+          },
+        });
+        router.push(redirect ?? "/dashboard");
+      } catch (error) {
+        googleLoginError(error);
+      }
     });
+
+  const [handleLoginWithGithub, isGithubLoginLoading] = useLoadingCallback(
+    async () => {
+      const auth = getFirebaseAuth();
+      try {
+        const user = await loginWithProvider(auth, getGithubProvider(auth));
+        const idTokenResult = await user.getIdTokenResult();
+        await fetch("/api/login", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${idTokenResult.token}`,
+          },
+        });
+        router.push(redirect ?? "/dashboard");
+      } catch (error) {
+        console.warn(error);
+        if (error instanceof FirebaseError) {
+          switch (error.code) {
+            case "auth/account-exists-with-different-credential":
+              setFirebaseAuthError(
+                "You already have an account with us. To link your GitHub account, please login to your account then link your GitHub account from your profile page."
+              );
+              break;
+            default:
+              setFirebaseAuthError(
+                "An error occurred while trying to login: " + error.code
+              );
+              setTimeout(() => {
+                setFirebaseAuthError("");
+              }, 5000);
+              break;
+          }
+        }
+      }
+    }
+  );
 
   function getLoginUrl() {
     if (redirect) {
@@ -150,9 +214,26 @@ export default function Register() {
   }
 
   return (
-    <div className="hero min-h-screen bg-base-200 max-h-7/8">
+    <div className="hero min-h-screen bg-base-200 max-h-7/8 flex flex-col pb-20">
+      <Link href="/">
+        <Image
+          className="mx-auto md:my-12 dark:hidden"
+          src="/logo_dark.svg"
+          alt={process.env.NEXT_PUBLIC_SITE_NAME||"5lnk - URL Shortener"}
+          loading="lazy"
+          width={120}
+          height={120}
+        />
+        <Image
+          className="mx-auto md:my-12 hidden dark:block"
+          src="/logo.svg"
+          alt={process.env.NEXT_PUBLIC_SITE_NAME||"5lnk - URL Shortener"}
+          loading="lazy"
+          width={120}
+          height={120}
+        />
+      </Link>
       <div className="hero-content flex-col lg:flex-row-reverse">
-        <Logo />
         <div className="text-center lg:text-left">
           <h1 className="text-5xl font-bold">Create your account!</h1>
           <p className="py-6">
@@ -259,15 +340,37 @@ export default function Register() {
                 </span>
               )}
             </div>
-            {firebaseAuthError && (<div className="alert alert-error sm">{firebaseAuthError}</div>)}
+            {firebaseAuthError && (
+              <div className="alert alert-error sm">{firebaseAuthError}</div>
+            )}
             <div className="form-control mt-6">
-              {isRegisterLoading ? (
-                <button type="submit" className="btn btn-primary">
-                  <div
-                    className="loading loading-spinner loading-lg"
-                    title="Register a new account"
-                  ></div>
-                </button>
+              {isGithubLoginLoading ||
+              isGoogleLoginLoading ||
+              isRegisterLoading ? (
+                <div className="flex flex-col text-center">
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={
+                      isGithubLoginLoading ||
+                      isGoogleLoginLoading ||
+                      isRegisterLoading
+                    }
+                  >
+                    <div
+                      className="loading loading-spinner loading-lg"
+                      title="Register a new account"
+                    ></div>
+                  </button>
+                  <a
+                    href={getLoginUrl()}
+                    className="label-text-alt link link-hover mt-4"
+                    title="Login to your account!"
+                  >
+                    Already have an account? Login!
+                  </a>
+                  <div className="my-2">or</div>
+                </div>
               ) : (
                 <div className="flex flex-col text-center">
                   <button type="submit" className="btn btn-primary">
@@ -280,8 +383,50 @@ export default function Register() {
                   >
                     Already have an account? Login!
                   </a>
+                  <div className="my-2">or</div>
                 </div>
               )}
+              {/* Social Login buttons */}
+              <div className="grid grid-flow-row gap-3">
+                <button
+                  className="btn btn-primary text-center"
+                  disabled={
+                    isGithubLoginLoading ||
+                    isGoogleLoginLoading ||
+                    isRegisterLoading
+                  }
+                  onClick={handleLoginWithGoogle}
+                >
+                  <Image
+                    className="w-6 h-6"
+                    src="https://www.svgrepo.com/show/475656/google-color.svg"
+                    loading="lazy"
+                    alt="google logo"
+                    width={6}
+                    height={6}
+                  />
+                  <span>Continue with Google</span>
+                </button>
+                <button
+                  className="btn btn-primary text-center"
+                  disabled={
+                    isGithubLoginLoading ||
+                    isGoogleLoginLoading ||
+                    isRegisterLoading
+                  }
+                  onClick={handleLoginWithGithub}
+                >
+                  <Image
+                    className="w-6 h-6"
+                    src="https://www.svgrepo.com/show/512317/github-142.svg"
+                    loading="lazy"
+                    alt="google logo"
+                    width={6}
+                    height={6}
+                  />
+                  <span>Continue with GitHub</span>
+                </button>
+              </div>
             </div>
           </form>
         </div>

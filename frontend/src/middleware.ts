@@ -5,7 +5,7 @@ import {
   refreshAuthCookies,
 } from "next-firebase-auth-edge/lib/next/middleware";
 import { getFirebaseAuth } from "next-firebase-auth-edge/lib/auth";
-import { authConfig } from "./config/server-config";
+import { authConfig } from "@config/server-config";
 
 const PUBLIC_PATHS = ["/", "/articles", "/auth/register", "/auth/login", "/auth/recover"];
 
@@ -72,7 +72,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/((?!_next|favicon.ico|screenshot-dev.jpeg|api|articles).*)",
+    "/((?!_next|favicon.ico|screenshot-dev.png|logo.svg|logo_dark.svg|api|articles).*)",
     "/api/login",
     "/api/logout",
   ],
