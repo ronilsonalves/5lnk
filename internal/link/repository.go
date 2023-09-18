@@ -5,7 +5,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/ronilsonalves/5lnk/internal/domain"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 type Repository interface {
@@ -91,13 +90,14 @@ func (r *linkRepository) CountLinksByUser(userId string) (int64, error) {
 
 // CountLinkClicksByUser counts the number of clicks by user
 func (r *linkRepository) CountLinkClicksByUser(userId string) (int64, error) {
-	var total = ""
+	var total int
 	if err := r.db.Raw("SELECT SUM(clicks) as total FROM links WHERE user_id = ?", userId).Scan(&total).Error; err != nil {
+		if err.Error() == `sql: Scan error on column index 0, name "total": converting NULL to int is unsupported` {
+			return 0, nil
+		}
 		return 0, fmt.Errorf("unable to count clicks by user")
 	}
-	var count int64
-	count, _ = strconv.ParseInt(total, 10, 64)
-	return count, nil
+	return int64(total), nil
 }
 
 // Delete deletes a link
