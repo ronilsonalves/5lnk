@@ -6,7 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ronilsonalves/5lnk/config/auth"
 	"github.com/ronilsonalves/5lnk/internal/apikey"
+	"github.com/ronilsonalves/5lnk/pkg/web"
 	"log"
+	"net/http"
 	"strings"
 )
 
@@ -22,7 +24,7 @@ func Authenticate(c context.Context, app *firebase.App) gin.HandlerFunc {
 
 		if len(rawAccessToken) == 0 {
 			log.Println("token not provided")
-			ctx.AbortWithStatusJSON(401, gin.H{"message": "unauthorized"})
+			web.BadResponse(ctx, http.StatusUnauthorized, "error", "unauthorized")
 			return
 		}
 
@@ -32,8 +34,8 @@ func Authenticate(c context.Context, app *firebase.App) gin.HandlerFunc {
 			_, err := s.RetrieveUserId(rawAccessToken)
 			if err != nil {
 				log.Printf("error retrieving userId: %v\n\n", err)
-				ctx.AbortWithStatusJSON(401, gin.H{"message": "unauthorized"})
-
+				web.BadResponse(ctx, http.StatusUnauthorized, "error", "unauthorized")
+				return
 			}
 			ctx.Next()
 			return
@@ -42,14 +44,14 @@ func Authenticate(c context.Context, app *firebase.App) gin.HandlerFunc {
 		client, err := app.Auth(c)
 		if err != nil {
 			log.Printf("error getting Auth client: %v\n", err)
-			ctx.AbortWithStatusJSON(503, gin.H{"message": "internal server error"})
+			web.BadResponse(ctx, http.StatusInternalServerError, "error", "an error occurred while authenticating the user")
 			return
 		}
 
 		_, err = client.VerifyIDToken(c, rawAccessToken)
 		if err != nil {
 			log.Printf("error verifying ID token: %v\n\n", err)
-			ctx.AbortWithStatusJSON(401, gin.H{"message": "unauthorized"})
+			web.BadResponse(ctx, http.StatusUnauthorized, "error", "unauthorized")
 			return
 		}
 		ctx.Next()
