@@ -87,6 +87,9 @@ export default function Footer() {
           </a>
         </p>
       </div>
+      <div>
+        <span>Version: 0.1.2 from August, 23.</span>
+      </div>
     </footer>
   );
 }
