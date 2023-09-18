@@ -4,3 +4,4 @@
 .DS_Store
 fly.toml
 env/firebase.json
+frontend/.vscode/settings.json
