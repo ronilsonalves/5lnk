@@ -7,7 +7,7 @@ import {
 import { getFirebaseAuth } from "next-firebase-auth-edge/lib/auth";
 import { authConfig } from "@config/server-config";
 
-const PUBLIC_PATHS = ["/", "/articles", "/auth/register", "/auth/login", "/auth/recover"];
+const PUBLIC_PATHS = ["/", "/blog", "/auth/register", "/auth/login", "/auth/recover"];
 
 const { getUser } = getFirebaseAuth(
   authConfig.serviceAccount,
@@ -72,7 +72,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/((?!_next|favicon.ico|screenshot-dev.png|logo.svg|logo_dark.svg|api|articles).*)",
+    "/((?!_next|favicon.ico|screenshot-dev.png|logo.svg|logo_dark.svg|api|blog).*)",
     "/api/login",
     "/api/logout",
   ],
