@@ -1,24 +1,34 @@
+import React from "react";
 import Image from "next/image";
-import ReactMarkdown from "react-markdown";
+import type { MDXComponents } from "mdx/types";
+import { useMDXComponent } from "next-contentlayer/hooks";
+import { Post } from "contentlayer/generated";
+import "../style/markdown.css";
+import Link from "next/link";
 
-import Post from "@/types/Post";
-
-interface ArticleProps {
+interface ContentProps {
   post: Post;
 }
 
-const ArticleContent: React.FC<ArticleProps> = async ({post}: ArticleProps) => {
+const mdxComponents: MDXComponents = {
+  a: ({href, children}) => <Link href={href as string}>{children}</Link>,
+  h1: ({children}) => <h1 className="text-3xl font-bold mt-8 mb-2 text-white-900">{children}</h1>,
+  h2: ({children}) => <h2 className="text-2xl font-bold mt-8 mb-2 text-white-900">{children}</h2>,
+  p: ({children}) => <p className="my-4">{children}</p>,
+  //@ts-ignore
+  img: ({alt,src}) => <Image alt={alt} src={src} width={1080} height={720} loading="lazy" className="aspect-[16/9] w-full rounded-2xl object-cover sm:aspect-[2/1]" />,
+};
+
+const Content: React.FC<ContentProps> = async ({ post }: ContentProps) => {
+  const MDXContent = useMDXComponent(post.body.code);
   return (
     <article className="my-2">
       <div className="mx-auto max-w-2xl text-center my-6">
         <h1 className="text-3xl font-bold tracking-tight text-white-900 sm:text-4xl">
           {post.title}
         </h1>
-        <p className="mt-2 text-lg leading-8 text-white-600">
-          {post.description}
-        </p>
-        <div className="mt-8 flex items-center gap-x-4 text-xs">
-          <time
+        <div className="mt-8 flex items-center gap-x-4 text-sm">
+        <time
             dateTime={new Date(post.date).toLocaleDateString()}
             className="text-white-500"
           >
@@ -50,19 +60,19 @@ const ArticleContent: React.FC<ArticleProps> = async ({post}: ArticleProps) => {
           </div>
         </div>
       </div>
-      <div className="grid grid-flow-col justify-center my-8">
+      <div className="grid grid-flow-col gap-2 justify-center my-8">
         <Image
           src={post.imageUrl}
           alt={post.title}
-          width={800}
-          height={600}
+          width={1080}
+          height={720}
           priority
-          className="aspect-[16/9] w-full rounded-2xl object-cover sm:aspect-[2/1] lg:aspect-[3/2] bg:black"
+          className="aspect-[16/9] w-full rounded-2xl object-cover sm:aspect-[2/1] bg:black"
         />
       </div>
-      <ReactMarkdown>{post.content}</ReactMarkdown>
+      <MDXContent components={mdxComponents}/>
     </article>
   );
 };
 
-export default ArticleContent;
+export default Content;

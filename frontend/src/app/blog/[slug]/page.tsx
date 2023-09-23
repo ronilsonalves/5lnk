@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import { getPostBySlug } from "@/lib/hooks/usePosts";
-import Post from "@/types/Post";
-import ArticleContent from "@/app/blog/components/ArticleContent";
+import { Post } from "contentlayer/generated";
 import Footer from "@/components/Footer";
+import Content from "@/app/blog/[slug]/components/Article";
 
 type Props = {
   params: { slug: string };
@@ -13,7 +13,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = params.slug;
   const post = await fechPostData(slug);
   return {
-    title: post.title + " | " + process.env.NEXT_PUBLIC_SITE_NAME,
+    title: post.title + " | Blog",
+    authors: [
+      {
+        name: post.author.name,
+        url: post.author.href
+      },
+    ],
     openGraph: {
       title: post.title,
       description: post.description,
@@ -43,7 +49,7 @@ export default async function Article({params: { slug }} : {
     <>
       <Navbar />
       <div className="mx-auto max-w-7xl px-6 lg:px-8 my-12">        
-        <ArticleContent post={post} />
+        <Content post={post} />
       </div>
       <Footer />
     </>

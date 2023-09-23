@@ -8,10 +8,9 @@ import ArticleCard from "@/app/blog/components/ArticleCard";
 
 export default function BlogPosts() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   useEffect(() => {
-    usePosts(setPosts, setLoading, setError);
+    usePosts(setPosts, setError);
   }, []);
   return (
     <div className="mx-auto max-w-7xl px-6 lg:px-8 my-12">
