@@ -1,17 +1,13 @@
 "use client";
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 export const metadata = {
   title: `Page not found | ${process.env.NEXT_PUBLIC_SITE_NAME}`,
   description: 'Sorry, we couldn\'t find the page you\'re looking for.',
 };
 
-function NotFoundPage() {
-    const router = useRouter();
-    console.log(router)
-    
+function NotFoundPage() {    
   return (
     <div
       className={
