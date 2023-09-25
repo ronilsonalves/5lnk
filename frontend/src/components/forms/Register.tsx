@@ -19,6 +19,7 @@ import {
 } from "@/app/auth/login/firebase";
 
 import { FirebaseError } from "firebase/app";
+import BackTo from "@components/BackTo";
 
 interface UserRegisterFormData {
   firstName: string;
@@ -431,6 +432,7 @@ export default function Register() {
           </form>
         </div>
       </div>
+      <BackTo title="Home" route="/"/>
     </div>
   );
 }

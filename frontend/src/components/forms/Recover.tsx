@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowSmallLeftIcon } from "@heroicons/react/24/outline";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useLoadingCallback } from "react-loading-hook";
 import { ValidationError, object, string } from "yup";
 import { useFirebaseAuth } from "@/auth/firebase";
+import BackTo from "../BackTo";
 
 interface UserRecoverFormData {
   email: string;
@@ -19,7 +19,6 @@ let userRecoverValidationSchema = object({
 });
 
 export default function Recover() {
-  const router = useRouter();
   const auth = useFirebaseAuth();
   const [formData, setFormData] = useState<UserRecoverFormData>({
     email: "",
@@ -104,15 +103,7 @@ export default function Recover() {
             </div>
           </div>
         </div>
-        <div className="bg-base-200 max-w-xs mx-auto text-center">
-          <button
-            className="btn btn-ghost btn-sm rounded-btn"
-            onClick={() => router.push("/auth/login")}
-          >
-            <ArrowSmallLeftIcon className="w-8 h-8" />
-            Back to Login
-          </button>
-        </div>
+        <BackTo title="Login" route="auth/login" />
       </div>
     </div>
   );

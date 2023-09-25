@@ -14,8 +14,9 @@ import {
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { ValidationError, object, string } from "yup";
 
-import RedirectingPage from "../skeleton/RedirectingPage";
+import RedirectingPage from "@components/skeleton/RedirectingPage";
 import { FirebaseError } from "firebase/app";
+import BackTo from "@components/BackTo";
 
 interface UserLoginFormData {
   email: string;
@@ -386,6 +387,7 @@ export default function Login() {
               </div>
             </div>
           ))}
+          <BackTo title="Home" route="/"/>
       </div>
     </>
   );

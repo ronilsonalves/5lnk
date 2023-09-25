@@ -22,7 +22,7 @@ export default function Navbar() {
   });
 
   return (
-    <header className="navbar bg-base-200 p-0">
+    <header className="navbar bg-base-200 p-0 justify-around">
       {!pathname.startsWith("/dashboard") &&
       !pathname.startsWith("/profile") ? (
         <div className="navbar-start w-1/3">
@@ -57,7 +57,7 @@ export default function Navbar() {
               </li>
               <li>
                 <a href="/blog" title="Some useful tips">
-                  Articles
+                  Blog
                 </a>
               </li>
             </ul>
@@ -72,7 +72,7 @@ export default function Navbar() {
         </a>
       </div>
       {user ? (
-        <div className="navbar-end sm:w-1/3">
+        <div className="navbar-end w-1/3 p-0.5">
           <div className="dropdown dropdown-end">
             <label tabIndex={-10} className="btn btn-ghost btn-circle avatar">
               <div className="w-10 rounded-full">
@@ -90,7 +90,7 @@ export default function Navbar() {
               className="menu menu-sm dropdown-content mt-3 z-[10] p-4 shadow bg-base-200 rounded-box w-52"
             >
               <li>
-                {pathname.startsWith("/blog") || pathname.length === 1 ? (
+                {pathname.startsWith("/blog") || pathname.startsWith("/pages") || pathname.length === 1 ? (
                   <a className="justify-between" href={`${process.env.NEXT_PUBLIC_SITE_URL}/dashboard`}>
                     Dashboard
                     <span className="badge">New</span>
@@ -109,7 +109,7 @@ export default function Navbar() {
           </div>
         </div>
       ) : (
-        <div className="navbar-end w-1/3 p-1">
+        <div className="navbar-end w-1/3 p-0.5">
           <a href="/auth/login" title="Login to your account">
             <button className="btn btn-ghost" title="Login to your account">Login</button>
           </a>
