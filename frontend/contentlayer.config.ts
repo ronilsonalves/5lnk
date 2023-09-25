@@ -52,6 +52,30 @@ export const PostContent = defineDocumentType(() => ({
   },
 }));
 
+export const PageContent = defineDocumentType(() => ({
+  name: "Page",
+  filePathPattern: "pages/*.mdx",
+  contentType: "mdx",
+  fields: {
+    title: {
+      type: "string",
+      description: "The title of the page",
+      required: true,
+    },
+    date: {
+      type: "date",
+      description: "The date of the page",
+      required: true,
+    },
+  },
+  computedFields: {
+    slug: {
+      type: "string",
+      resolve: (page) => `${page._raw.flattenedPath}`,
+    },
+  },
+}))
+
 const Author = defineNestedType(() => ({
   name: "Author",
   fields: {
@@ -80,5 +104,5 @@ const Author = defineNestedType(() => ({
 
 export default makeSource({
   contentDirPath: "src/content",
-  documentTypes: [PostContent],
+  documentTypes: [PostContent, PageContent],
 });

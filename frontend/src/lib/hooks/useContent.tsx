@@ -1,5 +1,5 @@
-import { Post } from "contentlayer/generated";
-import {allPosts} from 'contentlayer/generated';
+import { Post, Page } from "contentlayer/generated";
+import {allPosts, allPages} from 'contentlayer/generated';
 
 export const usePosts = async(setPosts: Function, setError: Function) => {
     try {
@@ -15,6 +15,9 @@ export const usePosts = async(setPosts: Function, setError: Function) => {
 };
 
 export const getPostBySlug = async(slug: string): Promise<Post> => {
-    //@ts-ignore
-    return allPosts.find((postBySlug) => postBySlug.slug === 'blog/'+slug);
+    return allPosts.find((postBySlug) => postBySlug.slug === 'blog/'+slug)!;
+};
+
+export const getPageBySlug = async (slug: string): Promise<Page> => {
+    return allPages.find((pageBySlug) => pageBySlug.slug === 'pages/'+slug)!;    
 };

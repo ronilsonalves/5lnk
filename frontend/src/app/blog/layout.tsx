@@ -1,8 +1,8 @@
-import "@/app/globals.css";
+import "@styles/globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: `Articles | ${process.env.NEXT_PUBLIC_SITE_NAME}`,
+  title: `Blog | ${process.env.NEXT_PUBLIC_SITE_NAME}`,
   description: "Guides that will help you to empower your business using our services.",
 };
 

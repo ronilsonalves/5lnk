@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import Post from "@/types/Post";
-import { usePosts } from "@/lib/hooks/usePosts";
+import { usePosts } from "@/lib/hooks/useContent";
 import ArticleCard from "@/app/blog/components/ArticleCard";
 
 export default function BlogPosts() {

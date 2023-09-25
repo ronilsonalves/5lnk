@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import Navbar from "@/components/Navbar";
-import { getPostBySlug } from "@/lib/hooks/usePosts";
+import { getPostBySlug } from "@/lib/hooks/useContent";
 import { Post } from "contentlayer/generated";
+import Content from "@/components/Content";
 import Footer from "@/components/Footer";
-import Content from "@/app/blog/[slug]/components/Article";
 import { notFound } from "next/navigation";
 
 type Props = {

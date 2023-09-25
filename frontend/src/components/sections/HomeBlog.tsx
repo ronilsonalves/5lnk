@@ -1,6 +1,6 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
-import { usePosts } from "@/lib/hooks/usePosts";
+import { usePosts } from "@/lib/hooks/useContent";
 import Post from "@/types/Post";
 import ArticleCard from "@/app/blog/components/ArticleCard";
 import Link from "next/link";

@@ -27,6 +27,7 @@
       "@components/*": ["./src/components/*"],
       "@config/*": ["./src/config/*"],
       "@dashboard/*": ["./src/app/dashboard/*"],
+      "@styles/*": ["./src/app/styles/*"],
       "@types/*": ["./src/types/*"],
     }
   },
