@@ -3,7 +3,6 @@ import { authConfig } from "@/config/server-config";
 import { getTokens } from "next-firebase-auth-edge/lib/next/tokens";
 import { refreshAuthCookies } from "next-firebase-auth-edge/lib/next/middleware";
 import Stats from "@/types/Stats";
-import { json } from "stream/consumers";
 
 export async function GET(request: NextRequest) {
   const tokens = await getTokens(request.cookies, authConfig);
@@ -20,7 +19,7 @@ export async function GET(request: NextRequest) {
       headers: {
         "Content-Type": "application/json",
       }
-    })
+    });
   }
 
   const fetchLinkCount = () => {

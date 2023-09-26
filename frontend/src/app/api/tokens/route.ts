@@ -7,7 +7,17 @@ export async function POST(request: NextRequest) {
   const tokens = await getTokens(request.cookies, authConfig);
 
   if (!tokens) {
-    throw new Error("Cannot generate an API Token for an unauthenticated user");
+    return new NextResponse(
+      JSON.stringify(
+        "Error: Cannot generate an API Token for an unauthenticated user"
+      ),
+      {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
 
   const getBody = await request.body
@@ -45,35 +55,49 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-    const tokens = await getTokens(request.cookies, authConfig);
+  const tokens = await getTokens(request.cookies, authConfig);
 
-    if (!tokens) {
-      throw new Error("Cannot GET an API Token for an unauthenticated user");
-    }
+  if (!tokens) {
+    return new NextResponse(
+      JSON.stringify(
+        "Error: Cannot GET an API Token for an unauthenticated user"
+      ),
+      {
+        status: 401,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  }
 
-    const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_URL + "apikeys" +"/"+tokens.decodedToken.uid, {
+  const apiResponse = await fetch(
+    process.env.NEXT_PUBLIC_API_URL + "apikeys" + "/" + tokens.decodedToken.uid,
+    {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + tokens.token,
       },
-    });
+    }
+  );
 
-    const data = await apiResponse.json();
+  const data = await apiResponse.json();
 
-    var start = 4;
-    var end = data.length - 4
+  var start = 4;
+  var end = data.length - 4;
 
-    let tokenProtected = data.toString().slice(start, end).replace(/./g, '*');
-    tokenProtected = data.toString().slice(0, 4) + tokenProtected + data.toString().slice(-4)
+  let tokenProtected = data.toString().slice(start, end).replace(/./g, "*");
+  tokenProtected =
+    data.toString().slice(0, 4) + tokenProtected + data.toString().slice(-4);
 
-    const response = new NextResponse(JSON.stringify(tokenProtected), {
-      status: apiResponse.status,
-      headers: apiResponse.headers,
-    });
+  const response = new NextResponse(JSON.stringify(tokenProtected), {
+    status: apiResponse.status,
+    headers: apiResponse.headers,
+  });
 
-    // Attach `Set-Cookie` headers with token containing new custom claims
-    await refreshAuthCookies(tokens.token, response, authConfig);
+  // Attach `Set-Cookie` headers with token containing new custom claims
+  await refreshAuthCookies(tokens.token, response, authConfig);
 
-    return response;
+  return response;
 }

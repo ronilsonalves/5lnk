@@ -7,7 +7,13 @@ export async function POST(request: NextRequest) {
   const tokens = await getTokens(request.cookies, authConfig);
 
   if (!tokens) {
-    throw new Error("Cannot shorten the link of unauthenticated user");
+    return new NextResponse(JSON.stringify("Error: Cannot short a link of unauthenticated user"),
+    {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
   }
 
   const getBody = await request.body
@@ -50,7 +56,13 @@ export async function GET(request: NextRequest) {
   const tokens = await getTokens(request.cookies, authConfig);
 
   if (!tokens) {
-    throw new Error("Cannot retrieve the links of unauthenticated user");
+    return new NextResponse(JSON.stringify("Error: Cannot get the links of unauthenticated user"),
+    {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
   }
 
   const apiResponse = await fetch(
@@ -81,7 +93,13 @@ export async function PUT(request: NextRequest) {
   const tokens = await getTokens(request.cookies, authConfig);
 
   if (!tokens) {
-    throw new Error("Cannot update the link of unauthenticated user");
+    return new NextResponse(JSON.stringify("Error: Cannot update a link of unauthenticated user"),
+    {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
   }
 
   const getBody = await request.body
@@ -127,7 +145,14 @@ export async function DELETE(request: NextRequest) {
   const tokens = await getTokens(request.cookies, authConfig);
 
   if (!tokens) {
-    throw new Error("Cannot delete the link of unauthenticated user");
+    //throw new Error("Cannot delete the link of unauthenticated user");
+    return new NextResponse(JSON.stringify("Error: Cannot delete link stats of unauthenticated user"),
+    {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
   }
 
   const getBody = await request.body
