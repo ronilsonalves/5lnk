@@ -3,6 +3,7 @@ import { authConfig } from "@/config/server-config";
 import { getTokens } from "next-firebase-auth-edge/lib/next/tokens";
 import { refreshAuthCookies } from "next-firebase-auth-edge/lib/next/middleware";
 import Stats from "@/types/Stats";
+import { json } from "stream/consumers";
 
 export async function GET(request: NextRequest) {
   const tokens = await getTokens(request.cookies, authConfig);
@@ -12,7 +13,14 @@ export async function GET(request: NextRequest) {
   };
 
   if (!tokens) {
-    throw new Error("Cannot get link stats of unauthenticated user");
+    //throw new Error("Cannot get link stats of unauthenticated user");
+    return new NextResponse(JSON.stringify("Error: Cannot get link stats of unauthenticated user"),
+    {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
   }
 
   const fetchLinkCount = () => {
