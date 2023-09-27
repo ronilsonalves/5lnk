@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   CurrencyDollarIcon,
   FolderIcon,
@@ -60,8 +61,8 @@ export default function Features() {
       <div className="pb-24 sm:pb-32">
         <div className="relative overflow-hidden pt-16">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <img
-              src="http://localhost:3000/screenshot-dev.png"
+            <Image
+              src="/screenshot-dev.png"
               alt="App screenshot"
               className="mb-[-12%] rounded-xl shadow-2xl ring-1 ring-gray-900/10 dark:ring-white-900/10"
               width={2432}
