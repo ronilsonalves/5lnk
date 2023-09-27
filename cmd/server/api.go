@@ -73,7 +73,7 @@ func main() {
 
 	r := gin.New()
 	r.Use(gin.Recovery(), gin.Logger(), cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:3000", "http://localhost:8080", "https://5lnk.live", "https://www.5lnk.live"},
+		AllowOrigins: []string{"http://localhost:3000", "http://localhost:8080", "https://*.5lnk.live", "https://www.5lnk.live", "https://*.vercel.app"},
 		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
 	}))
@@ -95,12 +95,12 @@ func main() {
 	//
 	r.GET("/",
 		cache.CachePage(store, time.Minute*10, func(c *gin.Context) {
-			c.Redirect(http.StatusMovedPermanently, "https://www.5lnk.live/?source=api")
+			c.Redirect(http.StatusMovedPermanently, "https://5lnk.live/?source=api_endpoint")
 		}))
 
 	// Redirect to the original URL
 	r.GET(":shortened",
-		cache.CachePage(inMemory, time.Minute*5, h.RedirectShortenedURL()))
+		cache.CachePage(store, time.Minute*1, h.RedirectShortenedURL()))
 
 	// User authentication
 	r.Use(middleware.Authenticate(ctx, app))
@@ -122,13 +122,11 @@ func main() {
 				cache.CachePage(inMemory, time.Minute, h.GetLink()))
 			links.DELETE("", h.Delete())
 			links.GET("/user/:userId",
-				//cache.CachePage(store, time.Minute, h.GetAllByUser()))
-				h.GetAllByUser())
+				cache.CachePage(store, time.Minute, h.GetAllByUser()))
 			links.GET("/user/:userId/count",
 				cache.CachePage(store, time.Minute, h.CountLinksByUser()))
 			links.GET("/user/:userId/clicks",
-				//cache.CachePage(store, time.Minute, h.CountLinkClicksByUser()))
-				h.CountLinkClicksByUser())
+				cache.CachePage(store, time.Minute, h.CountLinkClicksByUser()))
 		}
 	}
 
