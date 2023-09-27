@@ -45,7 +45,9 @@ export async function POST(request: NextRequest) {
 
   const response = new NextResponse(JSON.stringify(data), {
     status: apiResponse.status,
-    headers: apiResponse.headers,
+    headers: {
+      "Content-Type": "application/json"
+    }
   });
 
   // Attach `Set-Cookie` headers with token containing new custom claims
@@ -93,7 +95,9 @@ export async function GET(request: NextRequest) {
 
   const response = new NextResponse(JSON.stringify(tokenProtected), {
     status: apiResponse.status,
-    headers: apiResponse.headers,
+    headers: {
+      "Content-Type": "application/json"
+    }
   });
 
   // Attach `Set-Cookie` headers with token containing new custom claims
