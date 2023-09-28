@@ -1,5 +1,7 @@
-import Post from "@/types/Post";
+import Image from "next/image";
 import Link from "next/link";
+import Post from "@/types/Post";
+
 interface ArticleCardProps {
   post: Post;
 }
@@ -9,14 +11,22 @@ export default function ArticleCard({ post }: ArticleCardProps) {
       key={post.id}
       className="flex flex-col items-start justify-between"
     >
-      <div className="relative w-full">
-        <img
-          src={post.imageUrl}
-          alt=""
-          className="aspect-[16/9] w-full rounded-2xl bg-white-100 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
-        />
-        <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-white-900/10" />
-      </div>
+      <Link href={`${post.slug}`}>
+        <div className="relative w-full">
+          <Image
+            src={post.imageUrl}
+            alt={post.title}
+            width={1080}
+            height={720}
+            priority={false}
+            title={post.title}
+            loading="lazy"
+            placeholder="empty"
+            className="aspect-[16/9] w-full rounded-2xl bg-white-100 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
+          />
+          <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-purple-100/10" />
+        </div>
+      </Link>
       <div className="max-w-xl">
         <div className="mt-8 flex items-center gap-x-4 text-xs">
           <time
@@ -46,9 +56,11 @@ export default function ArticleCard({ post }: ArticleCardProps) {
           </p>
         </div>
         <div className="relative mt-8 flex items-center gap-x-4">
-          <img
+          <Image
             src={post.author.imageUrl}
             alt={post.author.name}
+            width={40}
+            height={40}
             className="h-10 w-10 rounded-full bg-white-100"
           />
           <div className="text-sm leading-6">

@@ -60,9 +60,12 @@ const Content: FC<ContentProps> = async ({ post, page }: ContentProps) => {
             ))}
           </div>
           <div className="relative mt-8 flex items-center gap-x-4">
-            <img
+            <Image
               src={post.author.imageUrl}
               alt={post.author.name}
+              width={40}
+              height={40}
+              loading="lazy"
               className="h-10 w-10 rounded-full bg-white-100"
             />
             <div className="text-sm leading-6">

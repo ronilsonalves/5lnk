@@ -3,7 +3,6 @@ import { Suspense, useEffect, useState } from "react";
 import { usePosts } from "@/lib/hooks/useContent";
 import Post from "@/types/Post";
 import ArticleCard from "@/app/blog/components/ArticleCard";
-import Link from "next/link";
 
 export default function HomeBlog() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -25,9 +24,7 @@ export default function HomeBlog() {
         <Suspense fallback={<div>Loading...</div>}>
           <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
             {posts.map((post) => (
-              <Link href={`${post.slug}`} key={post.id}>
-                <ArticleCard key={post.id} post={post} />
-              </Link>
+                <ArticleCard key={post.slug} post={post} />
             ))}
           </div>
         </Suspense>
