@@ -5,8 +5,11 @@ import React, { useState } from "react";
 import { experimental_useFormState as useFormState } from "react-dom";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { sendContactMsg } from "@/lib/actions/sendContactMsgAction";
+import GoogleRecaptchaWrapper from "@components/GoogleRecaptchaWrapper";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 interface ContactFormData {
+  recaptchaToken: string;
   name: string;
   email: string;
   message: string;
@@ -22,11 +25,29 @@ const initialState = {
   },
 };
 
+let recaptchaToken: string | undefined;
+
+export default function Contact() {
+  return (
+    <GoogleRecaptchaWrapper>
+      <Form />
+    </GoogleRecaptchaWrapper>
+  );
+}
+
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const { executeRecaptcha } = useGoogleReCaptcha();
+  executeRecaptcha?.().then((token) => {
+    recaptchaToken = token;
+  });
 
   return (
-    <button type="submit" disabled={pending} className="btn btn-primary">
+    <button
+      type="submit"
+      disabled={pending || !executeRecaptcha}
+      className="btn btn-primary"
+    >
       {pending ? (
         <div
           className="loading loading-spinner loading-lg"
@@ -39,7 +60,7 @@ function SubmitButton() {
   );
 }
 
-export default function Contact() {
+function Form() {
   const [state, formActions] = useFormState(sendContactMsg, initialState);
   const [contactFormData, setContactFormData] = useState<ContactFormData>({
     name: "",
@@ -134,6 +155,15 @@ export default function Contact() {
               )}
             </div>
             <div className="form-control mt-2">
+              <input
+                name="recaptcha-token"
+                type="string"
+                placeholder="Recaptcha token"
+                className="sr-only"
+                readOnly={true}
+                value={recaptchaToken ?? ""}
+                required={true}
+              />
               <SubmitButton />
             </div>
             <span className="text-center text-sm text-gray-200">

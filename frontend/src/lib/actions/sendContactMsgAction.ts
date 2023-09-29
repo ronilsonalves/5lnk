@@ -1,16 +1,11 @@
 "use server";
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 import { ValidationError, object, string } from "yup";
+import { validateRecaptchaAction } from "./validateRecaptchaAction";
 
-const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY);
-
-interface ContactFormData {
-  firstName: string;
-  email: string;
-  message: string;
-}
+const resend = new Resend(process.env.NEXT_RESEND_API_KEY);
 
 let contactValidationSchema = object({
   name: string()
@@ -24,6 +19,17 @@ export async function sendContactMsg(prevState: any, formData: FormData) {
   const name = formData.get("name");
   const email = formData.get("email");
   const message = formData.get("message");
+  const recaptchaToken = formData.get("recaptcha-token");
+
+  const recaptchaValidationStatus = await validateRecaptchaAction(recaptchaToken as string);
+  
+  if (!recaptchaValidationStatus) {
+    return {
+      message: `The request was blocked by the reCAPTCHA. Please try again later.`,
+      success: false,
+      validation: {},
+    };
+  }
 
   try {
     await contactValidationSchema.validate({
@@ -35,7 +41,7 @@ export async function sendContactMsg(prevState: any, formData: FormData) {
     });
     //Sending email to the user who submitted the form
     resend.emails.send({
-      from: process.env.NEXT_PUBLIC_MAIL_FROM!,
+      from: process.env.NEXT_MAIL_FROM!,
       //@ts-ignore
       to: email,
       subject: "Thank you for contacting us",
@@ -44,10 +50,10 @@ export async function sendContactMsg(prevState: any, formData: FormData) {
 
     // Sending email to the admin
     resend.emails.send({
-      from: process.env.NEXT_PUBLIC_MAIL_FROM!,
+      from: process.env.NEXT_MAIL_FROM!,
       // @ts-ignore
       reply_to: email,
-      to: process.env.NEXT_PUBLIC_MAIL_TO!,
+      to: process.env.NEXT_MAIL_TO!,
       subject: "New contact message",
       html: `<p>You have received a new contact message from ${name}.</p></br><p>Message: ${message}</p>`,
     });
@@ -74,7 +80,7 @@ export async function sendContactMsg(prevState: any, formData: FormData) {
     }
     if (error instanceof Error) {
       return {
-        message: `Sorry ${name}, we could not send your message. Please try again later.`,
+        message: `Sorry ${name}, we could not send your message. Please try again later. – ${error.message}`,
         success: false,
         validation: {},
       };
