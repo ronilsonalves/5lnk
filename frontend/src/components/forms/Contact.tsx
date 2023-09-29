@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+//@ts-ignore due to TypeScript error when using useFormState #56041
 import { experimental_useFormState as useFormState } from "react-dom";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
 import { sendContactMsg } from "@/lib/actions/sendContactMsgAction";

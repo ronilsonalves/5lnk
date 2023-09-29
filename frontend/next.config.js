@@ -1,11 +1,11 @@
-const {withContentlayer} = require('next-contentlayer')
+const { withContentlayer } = require('next-contentlayer')
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
     experimental: {
-        serverActions: true,
-    },
+                serverActions: true,
+            },
     images: {
         dangerouslyAllowSVG: true,
         remotePatterns: [
