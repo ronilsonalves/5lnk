@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     userId: parsedBody.userId ?? tokens.decodedToken.uid,
   };
 
-  const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_URL + "apikeys", {
+  const apiResponse = await fetch(process.env.NEXT_BACKEND_API_URL + "apikeys", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
   }
 
   const apiResponse = await fetch(
-    process.env.NEXT_PUBLIC_API_URL + "apikeys" + "/" + tokens.decodedToken.uid,
+    process.env.NEXT_BACKEND_API_URL + "apikeys" + "/" + tokens.decodedToken.uid,
     {
       method: "GET",
       headers: {

@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 
   const fetchLinkCount = () => {
     return fetch(
-      process.env.NEXT_PUBLIC_API_URL +
+      process.env.NEXT_BACKEND_API_URL +
         "links/user/" +
         tokens.decodedToken.uid +
         "/count",
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 
   const fetchClickCount = () => {
     return fetch(
-      process.env.NEXT_PUBLIC_API_URL +
+      process.env.NEXT_BACKEND_API_URL +
         "links/user/" +
         tokens.decodedToken.uid +
         "/clicks",

@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     userId: parsedBody.userId ?? tokens.decodedToken.uid,
   };
 
-  const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_URL + "links", {
+  const apiResponse = await fetch(process.env.NEXT_BACKEND_API_URL + "links", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
   }
 
   const apiResponse = await fetch(
-    process.env.NEXT_PUBLIC_API_URL + "links/user/" + tokens.decodedToken.uid,
+    process.env.NEXT_BACKEND_API_URL + "links/user/" + tokens.decodedToken.uid,
     {
       method: "GET",
       headers: {
@@ -116,7 +116,7 @@ export async function PUT(request: NextRequest) {
   const parsedBody = JSON.parse(getBody?.toString() ?? "{}");
 
   const backendResponse = await fetch(
-    process.env.NEXT_PUBLIC_API_URL + "links",
+    process.env.NEXT_BACKEND_API_URL + "links",
     {
       method: "PUT",
       headers: {
@@ -171,7 +171,7 @@ export async function DELETE(request: NextRequest) {
   const parsedBody = JSON.parse(getBody?.toString() ?? "{}");
 
   const backendResponse = await fetch(
-    process.env.NEXT_PUBLIC_API_URL + "links",
+    process.env.NEXT_BACKEND_API_URL + "links",
     {
       method: "DELETE",
       headers: {

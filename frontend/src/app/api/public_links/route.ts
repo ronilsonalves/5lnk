@@ -15,11 +15,11 @@ export async function POST(request: NextRequest) {
     userId: null,
   };
 
-  const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_URL + "links", {
+  const apiResponse = await fetch(process.env.NEXT_BACKEND_API_URL + "links", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + process.env.NEXT_PUBLIC_FRONTEND_API_KEY,
+      Authorization: "Bearer " + process.env.NEXT_FRONTEND_API_KEY,
     },
     body: JSON.stringify(link),
   });
