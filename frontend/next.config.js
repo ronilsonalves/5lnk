@@ -3,6 +3,9 @@ const {withContentlayer} = require('next-contentlayer')
 const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
+    experimental: {
+        serverActions: true,
+    },
     images: {
         dangerouslyAllowSVG: true,
         remotePatterns: [
