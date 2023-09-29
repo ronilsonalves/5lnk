@@ -31,7 +31,7 @@ interface UserRegisterFormData {
 
 let userRegistrationValidationSchema = object({
   firstName: string()
-    .matches(/(^[a-zA-Z])/, "First name must contain only letters")
+    .matches(/^[a-zA-Z]+$/, "First name must contain only letters")
     .required("First name is required"),
   lastName: string()
     .matches(/^[a-zA-Z]+$/, "Last name must contain only letters")
