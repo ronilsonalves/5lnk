@@ -1,11 +1,17 @@
 export default function Footer() {
   return (
     <footer className="footer footer-center p-10 bg-base-200 text-base-content rounded">
-      <div className="grid grid-flow-col gap-3">
-        <a href="/pages/contact">Contact-us</a>
-        <a href="/pages/privacy">Privacy & Data protection</a>
-        <a href="/pages/terms">Terms</a>
-      </div>
+      <ul className="grid grid-flow-col gap-4">
+        <li>
+          <a href="/pages/contact">Contact</a>
+        </li>
+        <li>
+          <a href="/pages/privacy">Privacy & Data Protection</a>
+        </li>
+        <li>
+          <a href="/pages/terms">Terms</a>
+        </li>
+      </ul>
       <div className="grid grid-flow-col gap-4">
         <a
           href="https://www.linkedin.com/in/ronilsonalves/"

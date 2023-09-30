@@ -21,6 +21,8 @@ export default function Navbar() {
     window.location.reload();
   });
 
+  console.log(user)
+
   return (
     <header className="navbar bg-base-200 p-0 justify-around">
       {!pathname.startsWith("/dashboard") &&
@@ -111,10 +113,7 @@ export default function Navbar() {
       ) : (
         <div className="navbar-end w-1/3 p-0.5">
           <a href="/auth/login" title="Login to your account">
-            <button className="btn btn-ghost" title="Login to your account">Login</button>
-          </a>
-          <a href="/auth/register" title="Create your account">
-            <button className="btn btn-primary" title="Create your account">Register</button>
+            <button className="btn btn-primary" title="Create your account">Login</button>
           </a>
         </div>
       )}
