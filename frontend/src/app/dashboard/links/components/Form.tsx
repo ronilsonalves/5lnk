@@ -39,7 +39,7 @@ const Form: React.FC<FormProps> = ({ onSuccessfulSubmit }) => {
         },
         body: JSON.stringify({
           url: (e.target as HTMLFormElement).url.value,
-          domain: process.env.NEXT_PUBLIC_URL_DOMAIN_REDIRECT ?? "5lnk.me",
+          domain: process.env.NEXT_PUBLIC_DEFAULT_SHORT_DOMAIN ?? "5lnk.me",
           userId: authenticatedUser?.uid,
         }),
       });
