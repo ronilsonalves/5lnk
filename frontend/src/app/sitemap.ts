@@ -24,10 +24,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.8
         },
         {
+            url: process.env.NEXT_PUBLIC_SITE_URL!+"/pages/contact",
+            lastModified: new Date(),
+            changeFrequency: 'yearly',
+            priority: 0.8
+        },
+        {
             url: process.env.NEXT_PUBLIC_SITE_URL!+"/blog",
             lastModified: new Date(),
             changeFrequency: 'weekly',
-            priority: 0.5
+            priority: 0.8
         }
     ];
 
