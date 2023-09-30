@@ -1,10 +1,10 @@
-import Head from "../components/Head";
-import Base from "../home";
-import NoLinks from "./components/Links";
+import Head from "@dashboard/components/Head";
+import Base from "@dashboard/home";
+import Links from "./components/Links";
 
 
 export const metadata = {
-  title: `Links | ${process.env.NEXT_PUBLIC_SITE_NAME}`,
+  title: `My Links | ${process.env.NEXT_PUBLIC_SITE_NAME} - URL Shortener`,
   description: "Manage your links, view your stats, and more!",
 };
 
@@ -13,7 +13,7 @@ export default async function LinksPage() {
     <main>
       <Base>
         <Head title="Links" />
-        <NoLinks />
+        <Links />
       </Base>
     </main>
   );

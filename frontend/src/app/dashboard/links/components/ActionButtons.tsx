@@ -21,6 +21,7 @@ export default function ActionButtons({
 }: ActionButtonsProps) {
   const [userAccessToken, setUserAccessToken] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const authenticatedUser = useFirebaseAuth().getFirebaseAuth().currentUser;
   authenticatedUser?.getIdToken().then((token) => {
     setUserAccessToken(token);
@@ -61,6 +62,7 @@ export default function ActionButtons({
   };
 
   const handleDelete = async () => {
+    setIsSubmitting(true);
     try {
       const response = await fetch("/api/links", {
         method: "DELETE",
@@ -78,12 +80,14 @@ export default function ActionButtons({
         setTimeout(() => {
           setError("");
         }, 3000);
+        setIsSubmitting(false);
         return;
       }
       // Success
       onDelete(link.id);
       setSuccess("Your link has been deleted successfully");
       closeModalByShortened(`del_${link.shortened}`);
+      setIsSubmitting(false);
       return;
     } catch (e) {
       if (e instanceof Error) {
@@ -91,6 +95,7 @@ export default function ActionButtons({
         setTimeout(() => {
           setError("");
         }, 3000);
+        setIsSubmitting(false);
         return;
       }
     }
@@ -98,6 +103,7 @@ export default function ActionButtons({
 
   const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const newUrl = (e.target as HTMLFormElement).newUrl.value;
     try {
       const response = await fetch("/api/links", {
@@ -116,12 +122,14 @@ export default function ActionButtons({
         setTimeout(() => {
           setError("");
         }, 3000);
+        setIsSubmitting(false);
         return;
       }
       // Success
       onSuccessfulUpdate(data);
       setSuccess("Your shortened link has been updated!");
       closeModalByShortened(`edit_${link.shortened}`);
+      setIsSubmitting(false);
       return;
     } catch (e) {
       if (e instanceof Error) {
@@ -129,6 +137,7 @@ export default function ActionButtons({
         setTimeout(() => {
           setError("");
         }, 3000);
+        setIsSubmitting(false);
         return;
       }
     }
@@ -172,12 +181,31 @@ export default function ActionButtons({
               className="input input-bordered join-item rounded-l-full w-full"
               placeholder="https://example.com/"
             />
-            <button
+            {isSubmitting ? (
+              <button
+                type="submit"
+                className="btn join-item rounded-r-full w-1/4"
+                disabled={true}
+              >
+                <div
+                  className="loading loading-spinner loading-lg"
+                  title="Deleting URL..."
+                ></div>
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="btn join-item rounded-r-full w-1/4"
+              >
+                Delete
+              </button>
+            )}
+            {/* <button
               type="submit"
               className="btn join-item rounded-r-full w-1/4"
             >
               Delete
-            </button>
+            </button> */}
           </div>
         </form>
         <form method="dialog" className="modal-backdrop">
@@ -207,12 +235,31 @@ export default function ActionButtons({
               className="input input-bordered join-item rounded-l-full w-full"
               placeholder="https://yournewlong.url"
             />
-            <button
+            {isSubmitting ? (
+              <button
+                type="submit"
+                className="btn join-item rounded-r-full w-1/3"
+                disabled={true}
+              >
+                <div
+                  className="loading loading-spinner loading-lg"
+                  title="Updating URL..."
+                ></div>
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="btn join-item rounded-r-full w-1/3"
+              >
+                Update URL
+              </button>
+            )}
+            {/* <button
               type="submit"
               className="btn join-item rounded-r-full w-1/3"
             >
               Update URL
-            </button>
+            </button> */}
           </div>
         </form>
         <form method="dialog" className="modal-backdrop">

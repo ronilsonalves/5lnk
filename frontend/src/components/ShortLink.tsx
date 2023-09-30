@@ -9,11 +9,14 @@ declare global {
 
 export default function ShortLink() {
   const [shortUrl, setShortUrl] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setIsSubmitting(true);
 
     const response = await fetch("/api/public_links", {
       method: "POST",
@@ -35,10 +38,10 @@ export default function ShortLink() {
       }, 1500);
       return;
     }
-    
     setShortUrl(data.finalUrl);
     (e.target as HTMLFormElement).reset();
     window.short_url_form.close();
+    setIsSubmitting(false);
   };
 
   const handleCopy = async (e: React.MouseEvent<Element, MouseEvent>) => {
@@ -58,35 +61,44 @@ export default function ShortLink() {
             Shorten URL
           </button>
           <dialog id="short_url_form" className="modal">
-              <form
-                method="dialog"
-                className="modal-box"
-                onSubmit={handleSubmit}
-              >
-                <h3 className="font-bold text-lg">Shorten your URL!</h3>
-                <p className="py-4">
-                  Please, paste the URL you want to shorten in the field below.
-                </p>
-                <div className="join w-full">
-                  <input
-                    name="url"
-                    type="url"
-                    required={true}
-                    className="input input-bordered join-item rounded-l-full w-full"
-                    placeholder="https://example.com/"
-                  />
+            <form method="dialog" className="modal-box" onSubmit={handleSubmit}>
+              <h3 className="font-bold text-lg">Shorten your URL!</h3>
+              <p className="py-4">
+                Please, paste the URL you want to shorten in the field below.
+              </p>
+              <div className="join w-full">
+                <input
+                  name="url"
+                  type="url"
+                  required={true}
+                  className="input input-bordered join-item rounded-l-full w-full"
+                  placeholder="https://example.com/"
+                />
+                {isSubmitting ? (
+                  <button
+                    type="submit"
+                    className="btn join-item rounded-r-full w-1/4"
+                    disabled={true}
+                  >
+                    <div
+                      className="loading loading-spinner loading-lg"
+                      title="Shortening URL..."
+                    ></div>
+                  </button>
+                ) : (
                   <button
                     type="submit"
                     className="btn join-item rounded-r-full w-1/4"
                   >
                     Shorten URL
                   </button>
-                </div>
-              </form>
-              <form method="dialog" className="modal-backdrop">
-                <button>Close</button>
-              </form>
-            </dialog>
+                )}
+              </div>
+            </form>
+            <form method="dialog" className="modal-backdrop">
+              <button>Close</button>
+            </form>
+          </dialog>
           {error && (
             <div className="toast toast-end">
               <div className="alert alert-error">

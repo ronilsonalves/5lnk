@@ -18,6 +18,7 @@ interface FormProps {
 const Form: React.FC<FormProps> = ({ onSuccessfulSubmit }) => {
   const [shortUrl, setShortUrl] = useState("");
   const [copySuccess, setCopySuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [userAccessToken, setUserAccessToken] = useState("");
   const authenticatedUser = useFirebaseAuth().getFirebaseAuth().currentUser;
@@ -27,6 +28,7 @@ const Form: React.FC<FormProps> = ({ onSuccessfulSubmit }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/links", {
@@ -56,12 +58,14 @@ const Form: React.FC<FormProps> = ({ onSuccessfulSubmit }) => {
       setShortUrl(data.finalUrl);
       (e.target as HTMLFormElement).reset();
       window.short_url_form.close();
+      setIsSubmitting(false);
     } catch (e) {
       if (e instanceof Error) {
         setError(e.message);
         setTimeout(() => {
           setError("");
         }, 1500);
+        setIsSubmitting(false);
         return;
       }
     }
@@ -74,7 +78,7 @@ const Form: React.FC<FormProps> = ({ onSuccessfulSubmit }) => {
     setTimeout(() => {
       setCopySuccess(false);
       setShortUrl("");
-    }, 1750);
+    }, 2000);
   };
 
   return (
@@ -106,12 +110,25 @@ const Form: React.FC<FormProps> = ({ onSuccessfulSubmit }) => {
                     className="input input-bordered join-item rounded-l-full w-full"
                     placeholder="https://example.com/"
                   />
-                  <button
-                    type="submit"
-                    className="btn join-item rounded-r-full w-1/4"
-                  >
-                    Shorten URL
-                  </button>
+                  {isSubmitting ? (
+                    <button
+                      type="submit"
+                      className="btn join-item rounded-r-full w-1/4"
+                      disabled={true}
+                    >
+                      <div
+                        className="loading loading-spinner loading-lg"
+                        title="Shortening URL..."
+                      ></div>
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      className="btn join-item rounded-r-full w-1/4"
+                    >
+                      Shorten URL
+                    </button>
+                  )}
                 </div>
               </form>
               <form method="dialog" className="modal-backdrop">
