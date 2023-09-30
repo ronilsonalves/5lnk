@@ -28,6 +28,7 @@ Currently, I'm working in new features such a page of links, theme and language 
 - TypeScript
 - Next.js
 - TailwindCSS
+- DaisyUI
 - Contentlayer
 
 ### DevOps / Deploy
