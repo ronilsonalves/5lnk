@@ -1,2 +1,11 @@
 /.env
 /.idea
+/pkg/middleware/firebase.json
+.DS_Store
+fly.toml
+env/firebase.json
+frontend/.vscode/settings.json
+/frontend/.env
+/frontend/.env.development
+/frontend/firebase.json
+frontend/.contentlayer
