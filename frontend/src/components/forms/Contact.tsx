@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 //@ts-ignore due to TypeScript error when using useFormState #56041
 import { experimental_useFormState as useFormState } from "react-dom";
 import { experimental_useFormStatus as useFormStatus } from "react-dom";
@@ -9,7 +9,6 @@ import GoogleRecaptchaWrapper from "@components/GoogleRecaptchaWrapper";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 interface ContactFormData {
-  recaptchaToken: string;
   name: string;
   email: string;
   message: string;
@@ -37,6 +36,8 @@ export default function Contact() {
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  setTimeout(() => {
+  }, 1000);
   const { executeRecaptcha } = useGoogleReCaptcha();
   executeRecaptcha?.().then((token) => {
     recaptchaToken = token;
@@ -75,6 +76,16 @@ function Form() {
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    if (state.success) {
+      setContactFormData({
+        name: "",
+        email: "",
+        message: "",
+      });
+    }
+  }, [state.success]);
 
   return (
     <div className="hero min-h-5/8 sm:min-h-7/8 bg-base-200 max-h-screen flex flex-col py-20">
@@ -166,9 +177,19 @@ function Form() {
               />
               <SubmitButton />
             </div>
-            <span className="text-center text-sm text-gray-200">
-              {state?.message}
-            </span>
+            { state.success && state.message ? (
+              <label className="label">
+                <span className="label-text-alt text-success">
+                  {state.message}
+                </span>
+              </label>
+            ) : (
+              <label className="label">
+                <span className="label-text-alt text-error">
+                  {state.message}
+                </span>
+              </label>
+            )}
           </form>
         </div>
       </div>
