@@ -88,7 +88,7 @@ function Form() {
   }, [state.success]);
 
   return (
-    <div className="hero min-h-5/8 sm:min-h-7/8 bg-base-200 max-h-screen flex flex-col py-20">
+    <div className="hero min-h-fit bg-base-200 max-h-5/8 flex flex-col py-10">
       <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="text-center lg:text-left">
           <h1 className="text-5xl font-bold">Geting in touch</h1>
@@ -97,7 +97,7 @@ function Form() {
             the our contact form and we will reach you as soon as possible.
           </p>
         </div>
-        <div className="card flex-shrink-0 w-3/4 max-w-xl shadow-2xl bg-base-200">
+        <div className="card flex-shrink-0 w-4/5 max-w-xl shadow-2xl bg-base-200">
           <form className="card-body" action={formActions}>
             <div className="form-control">
               <label className="label">
@@ -149,9 +149,9 @@ function Form() {
                 name="message"
                 type="text"
                 id="message"
-                rows={4}
+                rows={10}
                 placeholder="Type your message"
-                className="input input-bordered h-36 w-full"
+                className="input input-bordered h-48 w-full"
                 value={contactFormData.message}
                 required={true}
                 //@ts-ignore
