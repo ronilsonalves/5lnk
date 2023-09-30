@@ -77,7 +77,7 @@ export default function Navbar() {
             <label tabIndex={-10} className="btn btn-ghost btn-circle avatar">
               <div className="w-10 rounded-full">
                 <Image
-                  src={user.photoURL?.toString() ?? "/avatar.png"}
+                  src={user.photoURL?.toString() ?? "/avatar.svg"}
                   alt={user.displayName?.toString() ?? "User"}
                   title={user.displayName?.toString()}
                   width={40}
