@@ -8,4 +8,5 @@ frontend/.vscode/settings.json
 /frontend/.env
 /frontend/.env.development
 /frontend/firebase.json
+/frontend/package-lock.json
 frontend/.contentlayer

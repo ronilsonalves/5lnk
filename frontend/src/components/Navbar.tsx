@@ -7,6 +7,7 @@ import { useFirebaseAuth } from "@/auth/firebase";
 import { signOut } from "firebase/auth";
 import { useLoadingCallback } from "react-loading-hook";
 import Image from "next/image";
+import ThemeSwitch from "@/components/ThemeSwitch";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -20,8 +21,6 @@ export default function Navbar() {
     });
     window.location.reload();
   });
-
-  console.log(user)
 
   return (
     <header className="navbar bg-base-200 p-0 justify-around">
@@ -75,6 +74,7 @@ export default function Navbar() {
       </div>
       {user ? (
         <div className="navbar-end w-1/3 p-0.5">
+          <ThemeSwitch />
           <div className="dropdown dropdown-end">
             <label tabIndex={-10} className="btn btn-ghost btn-circle avatar">
               <div className="w-10 rounded-full">
@@ -112,8 +112,9 @@ export default function Navbar() {
         </div>
       ) : (
         <div className="navbar-end w-1/3 p-0.5">
+          <ThemeSwitch />
           <a href="/auth/login" title="Login to your account">
-            <button className="btn btn-primary" title="Create your account">Login</button>
+            <button className="btn btn-primary" title="Login or create your account">Login</button>
           </a>
         </div>
       )}

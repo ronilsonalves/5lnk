@@ -23,7 +23,7 @@
     "eslint-config-next": "13.4.9",
     "firebase": "^10.1.0",
     "firebase-admin": "^11.10.1",
-    "next": "^13.5.3",
+    "next": "^13.5.4",
     "next-contentlayer": "0.3.4",
     "next-firebase-auth-edge": "^0.8.3",
     "postcss": "8.4.27",
