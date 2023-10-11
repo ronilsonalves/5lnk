@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authConfig } from "@/config/server-config";
 import { getTokens } from "next-firebase-auth-edge/lib/next/tokens";
-import { refreshAuthCookies } from "next-firebase-auth-edge/lib/next/middleware";
 
 export async function POST(request: NextRequest) {
   const tokens = await getTokens(request.cookies, authConfig);
@@ -50,9 +49,6 @@ export async function POST(request: NextRequest) {
     }
   });
 
-  // Attach `Set-Cookie` headers with token containing new custom claims
-  await refreshAuthCookies(tokens.token, response, authConfig);
-
   return response;
 }
 
@@ -99,9 +95,6 @@ export async function GET(request: NextRequest) {
       "Content-Type": "application/json"
     }
   });
-
-  // Attach `Set-Cookie` headers with token containing new custom claims
-  await refreshAuthCookies(tokens.token, response, authConfig);
 
   return response;
 }

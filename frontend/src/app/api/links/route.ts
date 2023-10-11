@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authConfig } from "@/config/server-config";
 import { getTokens } from "next-firebase-auth-edge/lib/next/tokens";
-import { refreshAuthCookies } from "next-firebase-auth-edge/lib/next/middleware";
 
 export async function POST(request: NextRequest) {
   const tokens = await getTokens(request.cookies, authConfig);
@@ -48,9 +47,6 @@ export async function POST(request: NextRequest) {
     }
   });
 
-  // Attach `Set-Cookie` headers with token containing new custom claims
-  await refreshAuthCookies(tokens.token, response, authConfig);
-
   return response;
 }
 
@@ -86,9 +82,6 @@ export async function GET(request: NextRequest) {
       "Content-Type": "application/json"
     }
   });
-
-  // Attach `Set-Cookie` headers with token containing new custom claims
-  await refreshAuthCookies(tokens.token, response, authConfig);
 
   return response;
 }
@@ -141,9 +134,6 @@ export async function PUT(request: NextRequest) {
     }
   });
 
-  //Attach `Set-Cookie` headers with token containing new custom claims
-  await refreshAuthCookies(tokens.token, response, authConfig);
-
   return response;
 }
 
@@ -151,7 +141,7 @@ export async function DELETE(request: NextRequest) {
   const tokens = await getTokens(request.cookies, authConfig);
 
   if (!tokens) {
-    //throw new Error("Cannot delete the link of unauthenticated user");
+    console.error("Error: Cannot delete link stats of unauthenticated user");
     return new NextResponse(JSON.stringify("Error: Cannot delete link stats of unauthenticated user"),
     {
       status: 401,
@@ -203,8 +193,7 @@ export async function DELETE(request: NextRequest) {
           headers: backendResponse.headers,
         }
       );
-    // Attach `Set-Cookie` headers with token containing new custom claims
-    await refreshAuthCookies(tokens.token, response, authConfig);
+
     return response;
     default:
       const data = await backendResponse.json();
@@ -214,8 +203,7 @@ export async function DELETE(request: NextRequest) {
           "Content-Type": "application/json"
         }
       });
-    // Attach `Set-Cookie` headers with token containing new custom claims
-    await refreshAuthCookies(tokens.token, response, authConfig);
+
     return response;
   }
 }

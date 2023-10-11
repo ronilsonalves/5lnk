@@ -42,22 +42,19 @@ export async function middleware(request: NextRequest) {
     cookieSerializeOptions: authConfig.cookieSerializeOptions,
     cookieSignatureKeys: authConfig.cookieSignatureKeys,
     serviceAccount: authConfig.serviceAccount,
-    handleValidToken: async ({ token, decodedToken }) => {
+    handleValidToken: async ({ token, decodedToken }, headers) => {
       // Authenticated user should not be able to access /auth/login, /auth/register and /auth/recover routes
       if (PUBLIC_PATHS.includes(request.nextUrl.pathname)) {
         return redirectToDashboard(request);
       }
 
-      const user = await getUser(decodedToken.uid);
-      const response = new NextResponse(JSON.stringify(user), {
-        status: 200,
-        headers: { "content-type": "application/json" },
+      console.info("User authtenticated successfully")
+
+      return NextResponse.next({
+        request: {
+          headers
+        }
       });
-
-      // Attach `Set-Cookie` headers with token containing new custom claims
-      await refreshAuthCookies(token, response, authConfig);
-
-      return NextResponse.next();
     },
     handleInvalidToken: async () => {
       return redirectToLogin(request);

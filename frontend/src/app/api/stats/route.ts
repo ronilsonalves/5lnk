@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   };
 
   if (!tokens) {
-    //throw new Error("Cannot get link stats of unauthenticated user");
+    console.log("Error: Cannot get link stats of unauthenticated user");
     return new NextResponse(JSON.stringify("Error: Cannot get link stats of unauthenticated user"),
     {
       status: 401,
