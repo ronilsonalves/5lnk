@@ -28,13 +28,14 @@ func NewLinkHandler(s link.Service) *linkHandler {
 // @Tags Links
 // @Accept json
 // @Produce json
-// @Param body body web.ShortenURL true "Body"
+// @Param body body web.CreateShortenURL true "Body"
 // @Success 201 {object} domain.Link
 // @Failure 400 {object} web.errorResponse
+// @Failure 401 {object} web.errorResponse
 // @Router /api/v1/links [POST]
 func (h *linkHandler) PostURL() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var request web.ShortenURL
+		var request web.CreateShortenURL
 		err := ctx.ShouldBindJSON(&request)
 		if err != nil {
 			web.BadResponse(ctx, http.StatusBadRequest, "error", "invalid url provided")

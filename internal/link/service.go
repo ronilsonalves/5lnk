@@ -12,7 +12,7 @@ import (
 )
 
 type Service interface {
-	ShortenURL(request web.ShortenURL) (domain.Link, error)
+	ShortenURL(request web.CreateShortenURL) (domain.Link, error)
 	GetLink(linkId uuid.UUID) (*domain.Link, error)
 	Update(shortened domain.Link) (domain.Link, error)
 	GetOriginalURL(shortened string) (string, error)
@@ -38,7 +38,7 @@ func (s *linkService) GetLink(linkId uuid.UUID) (*domain.Link, error) {
 }
 
 // ShortenURL creates a new shortened URL
-func (s *linkService) ShortenURL(request web.ShortenURL) (domain.Link, error) {
+func (s *linkService) ShortenURL(request web.CreateShortenURL) (domain.Link, error) {
 	// Check if the URL already exists in the database
 	link, err := s.repo.FindByOriginal(request.URL)
 	if err == nil && request.UserId == "" || !strings.HasPrefix(request.UserId, "CREATED_BY_SYSTEM_") {
