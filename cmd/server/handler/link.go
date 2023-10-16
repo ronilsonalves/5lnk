@@ -2,6 +2,8 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/ronilsonalves/5lnk/internal/domain"
 	"github.com/ronilsonalves/5lnk/internal/link"
 	"github.com/ronilsonalves/5lnk/pkg/web"
 	"net/http"
@@ -60,11 +62,18 @@ func (h *linkHandler) PostURL() gin.HandlerFunc {
 // @Param id path string true "Link ID"
 // @Success 200 {object} domain.Link
 // @Failure 400 {object} web.errorResponse
+// @Failure 401 {object} web.errorResponse
+// @Failure 404 {object} web.errorResponse
 // @Router /api/v1/links/{id} [GET]
 func (h *linkHandler) GetLink() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Param("id")
-		response, err := h.s.GetLink(id)
+		parsedUUID, err := uuid.Parse(id)
+		if err != nil {
+			web.BadResponse(ctx, http.StatusBadRequest, "error", "invalid link ID provided")
+			return
+		}
+		response, err := h.s.GetLink(parsedUUID)
 		if err != nil {
 			web.BadResponse(ctx, http.StatusBadRequest, "error", err.Error())
 			return
@@ -83,14 +92,15 @@ func (h *linkHandler) GetLink() gin.HandlerFunc {
 // @Tags Links
 // @Accept json
 // @Produce json
-// @Param body body web.ShortenedURL true "Body"
+// @Param body body domain.Link true "Body"
 // @Success 200 {object} domain.Link
 // @Failure 400 {object} web.errorResponse
+// @Failure 401 {object} web.errorResponse
 // @Failure 404 {object} web.errorResponse
 // @Router /api/v1/links [PUT]
 func (h *linkHandler) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var request web.ShortenedURL
+		var request domain.Link
 		err := ctx.ShouldBindJSON(&request)
 		if err != nil {
 			web.BadResponse(ctx, http.StatusBadRequest, "error", "invalid request body provided")
@@ -118,6 +128,7 @@ func (h *linkHandler) Update() gin.HandlerFunc {
 // @Param userId path string true "User ID"
 // @Success 200 {object} int64
 // @Failure 400 {object} web.errorResponse
+// @Failure 401 {object} web.errorResponse
 // @Router /api/v1/links/user/{userId}/count [GET]
 func (h *linkHandler) CountLinksByUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -144,6 +155,7 @@ func (h *linkHandler) CountLinksByUser() gin.HandlerFunc {
 // @Param userId path string true "User ID"
 // @Success 200 {object} int64
 // @Failure 400 {object} web.errorResponse
+// @Failure 401 {object} web.errorResponse
 // @Router /api/v1/links/user/{userId}/clicks [GET]
 func (h *linkHandler) CountLinkClicksByUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -167,14 +179,15 @@ func (h *linkHandler) CountLinkClicksByUser() gin.HandlerFunc {
 // @Tags Links
 // @Accept json
 // @Produce json
-// @Param body body web.ShortenedURL true "Body"
+// @Param body body domain.Link true "Body"
 // @Success 204
 // @Failure 400 {object} web.errorResponse
+// @Failure 401 {object} web.errorResponse
 // @Failure 404 {object} web.errorResponse
 // @Router /api/v1/links [DELETE]
 func (h *linkHandler) Delete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var request web.ShortenedURL
+		var request domain.Link
 		err := ctx.ShouldBindJSON(&request)
 		if err != nil {
 			web.BadResponse(ctx, http.StatusBadRequest, "error", "invalid request body provided")
@@ -201,6 +214,7 @@ func (h *linkHandler) Delete() gin.HandlerFunc {
 // @Param userId path string true "User ID"
 // @Success 200 {object} []domain.Link
 // @Failure 400 {object} web.errorResponse
+// @Failure 401 {object} web.errorResponse
 // @Router /api/v1/links/user/{userId} [GET]
 func (h *linkHandler) GetAllByUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

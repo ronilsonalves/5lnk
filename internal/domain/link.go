@@ -12,6 +12,7 @@ type Link struct {
 	Shortened string    `gorm:"uniqueIndex" json:"shortened"`
 	FinalURL  string    `json:"finalUrl"`
 	UserId    string    `gorm:"index" json:"userId"`
+	PageRefer string    `gorm:"index,unsigned" json:"pageRefer"`
 	CreatedAt time.Time `json:"createdAt"`
 	Clicks    int       `json:"clicks"`
 }
