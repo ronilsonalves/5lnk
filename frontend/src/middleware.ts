@@ -72,7 +72,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/((?!_next|favicon.ico|screenshot-dev.png|logo.svg|logo_dark.svg|robots.txt|sitemap.xml|api/public_links|blog|pages).*)",
+    "/((?!_next|favicon.ico|screenshot-dev.png|logo.svg|logo_dark.svg|robots.txt|sitemap.xml|api/public_links|api/public_pages|blog|pages).*)",
     "/api/login",
     "/api/logout",
   ],
