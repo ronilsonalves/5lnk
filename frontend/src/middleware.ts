@@ -8,6 +8,7 @@ import { getFirebaseAuth } from "next-firebase-auth-edge/lib/auth";
 import { authConfig } from "@config/server-config";
 
 const PUBLIC_PATHS = ["/", "/blog", "/pages", "/auth/register", "/auth/login", "/auth/recover"];
+const PRIVATE_PATHS = ["/dashboard", "/api", "/profile"];
 
 const { getUser } = getFirebaseAuth(
   authConfig.serviceAccount,
@@ -33,7 +34,6 @@ function redirectToLogin(request: NextRequest) {
 }
 
 export async function middleware(request: NextRequest) {
-
   return authentication(request, {
     loginPath: "/api/login",
     logoutPath: "/api/logout",
@@ -48,7 +48,7 @@ export async function middleware(request: NextRequest) {
         return redirectToDashboard(request);
       }
 
-      console.info("User authtenticated successfully")
+      console.info("INFO: User authtenticated successfully");
 
       return NextResponse.next({
         request: {
@@ -57,6 +57,9 @@ export async function middleware(request: NextRequest) {
       });
     },
     handleInvalidToken: async () => {
+      if (!PRIVATE_PATHS.includes(request.nextUrl.pathname)) {
+        return NextResponse.next();
+      }
       return redirectToLogin(request);
     },
     handleError: async (error) => {
@@ -69,7 +72,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/((?!_next|favicon.ico|screenshot-dev.png|logo.svg|logo_dark.svg|robots.txt|sitemap.xml|api|blog|pages).*)",
+    "/((?!_next|favicon.ico|screenshot-dev.png|logo.svg|logo_dark.svg|robots.txt|sitemap.xml|api/public_links|blog|pages).*)",
     "/api/login",
     "/api/logout",
   ],
