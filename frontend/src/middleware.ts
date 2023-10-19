@@ -8,7 +8,7 @@ import { getFirebaseAuth } from "next-firebase-auth-edge/lib/auth";
 import { authConfig } from "@config/server-config";
 
 const PUBLIC_PATHS = ["/", "/blog", "/pages", "/auth/register", "/auth/login", "/auth/recover"];
-const PRIVATE_PATHS = ["/dashboard", "/api", "/profile"];
+const PRIVATE_PATHS = ["/dashboard", "/dashboard/links", "/dashboard/pages", "/api", "/profile"];
 
 const { getUser } = getFirebaseAuth(
   authConfig.serviceAccount,
@@ -34,6 +34,10 @@ function redirectToLogin(request: NextRequest) {
 }
 
 export async function middleware(request: NextRequest) {
+  console.log("INFO: Request received", {
+    method: request.method,
+    url: request.nextUrl.pathname,
+  });
   return authentication(request, {
     loginPath: "/api/login",
     logoutPath: "/api/logout",
@@ -50,10 +54,24 @@ export async function middleware(request: NextRequest) {
 
       console.info("INFO: User authtenticated successfully");
 
+      // Refresh the token if it's going to expire soon
+      const shouldRefresh = Date.now() / 1000 - decodedToken.auth_time > 24 * 60 * 60 - 5 * 60;
+      if (shouldRefresh) {
+        console.info("INFO: Refreshing token...");
+        const user = await getUser(token);
+        const response = new NextResponse(JSON.stringify(user), {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        await refreshAuthCookies(token, response, authConfig);
+      }
+
       return NextResponse.next({
         request: {
           headers
-        }
+        },
       });
     },
     handleInvalidToken: async () => {

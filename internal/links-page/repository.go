@@ -29,7 +29,7 @@ func NewLinksPageRepository(db *gorm.DB) Repository {
 func (r *linksPageRepository) FindById(id uuid.UUID) (domain.LinksPage, error) {
 	var linksPage domain.LinksPage
 	if err := r.db.Where("id = ?", id).Preload("Links").First(&linksPage).Error; err != nil {
-		log.Printf("unable to find the links page by ID: %v", err.Error())
+		log.Printf("ERROR: unable to find the links page by ID due to %v", err.Error())
 		return domain.LinksPage{}, err
 	}
 	return linksPage, nil
@@ -39,9 +39,11 @@ func (r *linksPageRepository) FindById(id uuid.UUID) (domain.LinksPage, error) {
 func (r *linksPageRepository) FindByAddress(alias string) (*domain.LinksPage, error) {
 	var linksPage domain.LinksPage
 	if err := r.db.Where("alias = ?", alias).Preload("Links").First(&linksPage).Error; err != nil {
-		log.Printf("unable to find the links page by address: %v", err.Error())
-		return &domain.LinksPage{}, err
+		log.Printf("ERROR: unable to find the links page by address due to %v", err.Error())
+		return nil, err
 	}
+	log.Printf("INFO: updating views for links page: %v", linksPage.ID)
+	go r.db.Raw("UPDATE links_pages SET views = views + 1 WHERE id = ?", linksPage.ID).Scan(&linksPage)
 	return &linksPage, nil
 }
 

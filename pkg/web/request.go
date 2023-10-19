@@ -4,6 +4,7 @@ package web
 type CreateLinksPage struct {
 	Title       string  `json:"title" binding:"required"`
 	Description string  `json:"description" binding:"required"`
+	ImageURL    string  `json:"imageURL" binding:"required"`
 	UserId      string  `json:"userId" binding:"required"`
 	Alias       string  `json:"alias" binding:"required"`
 	Domain      string  `json:"domain" binding:"required"`

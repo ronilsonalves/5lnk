@@ -74,12 +74,15 @@ func (s *linksPageService) Create(request web.CreateLinksPage) (domain.LinksPage
 
 	// Create a new linksPage object
 	linkPage := &domain.LinksPage{
-		Alias:     request.Alias,
-		Domain:    request.Domain,
-		FinalURL:  "https://" + request.Domain + "/" + request.Alias,
-		Links:     links,
-		UserId:    request.UserId,
-		CreatedAt: time.Now(),
+		Alias:       request.Alias,
+		Domain:      request.Domain,
+		FinalURL:    "https://" + request.Domain + "/" + request.Alias,
+		Links:       links,
+		UserId:      request.UserId,
+		Title:       request.Title,
+		Description: request.Description,
+		ImageURL:    request.ImageURL,
+		CreatedAt:   time.Now(),
 	}
 
 	log.Printf("INFO: inserting the linksPage `%v` into db...", linkPage.Alias)
@@ -140,7 +143,7 @@ func (s *linksPageService) Update(request domain.LinksPage) (domain.LinksPage, e
 	}
 
 	for _, lnk := range request.Links {
-		if lnk.ID.String() != "00000000-0000-0000-0000-000000000000" && lnk.ID.String() != "" {
+		if lnk.ID.String() != "00000000-0000-0000-0000-000000000000" || lnk.ID.String() != "" {
 			if _, err := s.ls.Update(lnk); err != nil {
 				log.Printf("ERROR: unable to update all links from links page `%s` due to %v", request.Alias, err.Error())
 				return domain.LinksPage{}, err
@@ -180,7 +183,6 @@ func (s *linksPageService) Delete(request domain.LinksPage) error {
 			return nil
 		}
 		log.Printf("INFO: deleting the shortened URL for the linksPage: %v", request.Alias)
-		log.Printf("INFO: deleting the shortened URL for the linksPage: %v", &shortened)
 		err = s.ls.Delete(*shortened)
 		if err != nil {
 			log.Printf("WARNING: the shortened URL for links page `%s` not found", request.Alias)

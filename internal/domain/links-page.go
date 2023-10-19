@@ -12,6 +12,7 @@ type LinksPage struct {
 	UserId      string    `gorm:"index" json:"userId"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
+	ImageURL    string    `json:"imageURL"`
 	Alias       string    `gorm:"uniqueIndex" json:"alias"`
 	Domain      string    `json:"domain"`
 	FinalURL    string    `json:"finalURL"`

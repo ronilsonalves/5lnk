@@ -43,17 +43,17 @@ export default function Base({ children }: { children: React.ReactNode }) {
       enabled: true,
     },
     {
+      name: "Links Pages",
+      href: "/dashboard/pages",
+      icon: RectangleGroupIcon,
+      current: true && pathname === "/dashboard/pages",
+      enabled: true,
+    },
+    {
       name: "Projects",
       href: "#",
       icon: FolderIcon,
       current: true && pathname === "/dashboard/projects",
-      enabled: false,
-    },
-    {
-      name: "Biolink pages",
-      href: "#",
-      icon: RectangleGroupIcon,
-      current: true && pathname === "/dashboard/biolink-pages",
       enabled: false,
     },
     {

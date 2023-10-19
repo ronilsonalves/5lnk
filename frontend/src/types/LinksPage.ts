@@ -7,4 +7,15 @@ export default interface LinksPage {
     description: string;
     imageURL: string;
     links: Link[];
+    finalURL: string;
+    views: number;
+    createdAt: Date;
+}
+
+export interface CreateLinksPage {
+    alias: string;
+    title: string;
+    description: string;
+    imageURL: string;
+    links: string[];
 }
