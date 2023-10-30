@@ -1,11 +1,16 @@
 import Link from "next/link";
 import LinksPage from "@/types/LinksPage";
+import ActionButtons from "./ActionButtons";
 
 interface PagesListProps {
   pages: LinksPage[];
+  userAccessToken: string;
+  onSuccessfulUpdate: (data: LinksPage) => void;
+  onDelete: (id: string) => void;
+  setSuccess: Function;
 }
 
-const PagesList: React.FC<PagesListProps> = ({ pages }) => {
+const PagesList: React.FC<PagesListProps> = ({ pages, userAccessToken, onSuccessfulUpdate, onDelete, setSuccess }) => {
   return (
     <div className="oveflow-x-auto h-96">
       <table className="table my-8 py-7">
@@ -23,8 +28,7 @@ const PagesList: React.FC<PagesListProps> = ({ pages }) => {
         <tbody className="px-8">
           {pages.map((page) => (
             <tr key={page.id}>
-              {/* TODO: Add edit and delete buttons */}
-              <td>{`BUTTONS GOES HERE`}</td>
+              <td>{<ActionButtons page={page} userAccessToken={userAccessToken} onSuccessfulUpdate={onSuccessfulUpdate} onDelete={onDelete} setSuccess={setSuccess}/>}</td>
               <td>{page.title}</td>
               <td>
                 <Link
