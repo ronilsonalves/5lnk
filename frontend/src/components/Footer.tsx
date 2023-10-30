@@ -91,13 +91,13 @@ export default function Footer() {
         <p>Copyright © 2023 - All right reserved.</p>
         <p>
           Built with ❤️ and <b>GoLang + Next.js</b> by{" "}
-          <a href="https://www.ronilsonalves.com/?source=7lnk.live">
+          <a href="https://www.ronilsonalves.com/?source=5lnk.live">
             <b>Ronilson Alves</b>
           </a>
         </p>
       </div>
       <div>
-        <span>Version: 0.2.0 from September, 23.</span>
+        <span>Version: 0.3.1 from October, 23.</span>
       </div>
     </footer>
   );
