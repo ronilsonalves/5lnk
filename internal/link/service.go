@@ -4,18 +4,21 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/ronilsonalves/5lnk/internal/domain"
+	"github.com/ronilsonalves/5lnk/internal/utils"
 	"github.com/ronilsonalves/5lnk/pkg/web"
-	"math/rand"
+	"log"
+	"strings"
 	"time"
 )
 
 type Service interface {
-	ShortenURL(request web.ShortenURL) (domain.Link, error)
-	GetLink(id string) (*domain.Link, error)
-	Update(request web.ShortenedURL) (domain.Link, error)
+	ShortenURL(request web.CreateShortenURL) (domain.Link, error)
+	GetLink(linkId uuid.UUID) (*domain.Link, error)
+	Update(shortened domain.Link) (domain.Link, error)
 	GetOriginalURL(shortened string) (string, error)
+	GetShortenedByOriginal(original string) (*domain.Link, error)
 	GetAllByUser(userId string) (*[]domain.Link, error)
-	Delete(request web.ShortenedURL) error
+	Delete(shortened domain.Link) error
 	CountLinksByUser(userId string) (int64, error)
 	CountLinkClicksByUser(userId string) (int64, error)
 }
@@ -30,27 +33,24 @@ func NewLinkService(repo Repository) Service {
 }
 
 // GetLink returns a link by the ID
-func (s *linkService) GetLink(id string) (*domain.Link, error) {
-	linkId, err := uuid.Parse(id)
-	if err != nil {
-		return nil, fmt.Errorf("invalid link id")
-	}
+func (s *linkService) GetLink(linkId uuid.UUID) (*domain.Link, error) {
 	return s.repo.FindByID(linkId)
 }
 
 // ShortenURL creates a new shortened URL
-func (s *linkService) ShortenURL(request web.ShortenURL) (domain.Link, error) {
-	// Check if the URL already exists in the database
-	link, err := s.repo.FindByOriginal(request.URL)
-	if err == nil {
-		return *link, nil
+func (s *linkService) ShortenURL(request web.CreateShortenURL) (domain.Link, error) {
+	if request.UserId == "" || !strings.HasPrefix(request.UserId, "CREATED_BY_SYSTEM_") {
+		link, err := s.repo.FindByOriginal(request.URL)
+		if err == nil {
+			return *link, nil
+		}
 	}
 
 	// Generate a new shortened URL
-	shortened := generateShortURL(request.Alias)
+	shortened := utils.GenerateRandomAlias(request.Alias)
 
 	// Create a new Link object
-	link = &domain.Link{
+	var link = &domain.Link{
 		Original:  request.URL,
 		Shortened: shortened,
 		FinalURL:  "https://" + request.ShortDomain + "/" + shortened,
@@ -75,26 +75,31 @@ func (s *linkService) GetOriginalURL(shortened string) (string, error) {
 	return link.Original, nil
 }
 
+// GetShortenedByOriginal returns the shortened URL from the original URL
+func (s *linkService) GetShortenedByOriginal(original string) (*domain.Link, error) {
+	link, err := s.repo.FindByOriginal(original)
+	if err != nil {
+		log.Printf("ERROR: unable to find the shortened URL for the original URL `%s` due to %v", original, err.Error())
+		return &domain.Link{}, err
+	}
+	if strings.HasPrefix(link.UserId, "CREATED_BY_SYSTEM_") {
+		return link, nil
+	}
+	return &domain.Link{}, fmt.Errorf("the original URL `%s` already been used by a shortened URL", original)
+}
+
 // GetAllByUser returns all shortened links by user
 func (s *linkService) GetAllByUser(userId string) (*[]domain.Link, error) {
+	log.Printf("INFO: getting all links pages by userId `%v`...", userId)
 	return s.repo.FindAllByUser(userId)
 }
 
 // Update updates a link
-func (s *linkService) Update(request web.ShortenedURL) (domain.Link, error) {
-	toUpdate, err := s.repo.FindByID(request.Id)
-	if err != nil {
+func (s *linkService) Update(request domain.Link) (domain.Link, error) {
+	if err := s.repo.Update(&request); err != nil {
 		return domain.Link{}, err
 	}
-
-	// For now, only the original URL can be updated
-	toUpdate.Original = request.Original
-
-	if err := s.repo.Update(toUpdate); err != nil {
-		return domain.Link{}, err
-	}
-
-	return *toUpdate, nil
+	return request, nil
 }
 
 // CountLinksByUser counts the number of shortened links by user
@@ -108,23 +113,6 @@ func (s *linkService) CountLinkClicksByUser(userId string) (int64, error) {
 }
 
 // Delete deletes a link
-func (s *linkService) Delete(request web.ShortenedURL) error {
-	toDelete, err := s.repo.FindByID(request.Id)
-	if err != nil {
-		return fmt.Errorf("unable to delete link: %v", err)
-	}
-	return s.repo.Delete(toDelete)
-}
-
-// generateShortURL generates a random 6-character alphanumeric string for the shortened URL
-func generateShortURL(alias string) string {
-	if alias != "" {
-		return alias
-	}
-	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	shortened := make([]byte, 6)
-	for i := range shortened {
-		shortened[i] = chars[rand.Intn(len(chars))]
-	}
-	return string(shortened)
+func (s *linkService) Delete(request domain.Link) error {
+	return s.repo.Delete(&request)
 }

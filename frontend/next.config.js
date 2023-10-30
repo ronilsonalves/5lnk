@@ -11,6 +11,14 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
+                hostname: 'avatars.githubusercontent.com'
+            },
+            {
+                protocol: 'https',
+                hostname: 'cdn.5lnk.live'
+            },
+            {
+                protocol: 'https',
                 hostname: 'tailwindui.com',
             },
             {

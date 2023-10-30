@@ -14,6 +14,7 @@ import (
 	"github.com/ronilsonalves/5lnk/internal/apikey"
 	"github.com/ronilsonalves/5lnk/internal/domain"
 	"github.com/ronilsonalves/5lnk/internal/link"
+	links_page "github.com/ronilsonalves/5lnk/internal/links-page"
 	"github.com/ronilsonalves/5lnk/pkg/middleware"
 	"github.com/swaggo/files"       // swagger embed files
 	"github.com/swaggo/gin-swagger" // gin-swagger middleware
@@ -50,6 +51,11 @@ func main() {
 		log.Fatalln("Error while migrating the Link model")
 	}
 
+	// Auto migrate the LinksPage model
+	if err := db.AutoMigrate(&domain.LinksPage{}); err != nil {
+		log.Fatalln("Error while migrating the LinksPage model")
+	}
+
 	// Initialize the random number generator
 	rand.Seed(time.Now().UnixNano())
 
@@ -62,7 +68,10 @@ func main() {
 
 	// Handlers Init
 	l := link.NewLinkRepository(db)
+	lpr := links_page.NewLinksPageRepository(db)
 	s := link.NewLinkService(l)
+	lps := links_page.NewLinksPageService(lpr, s)
+	lp := handler.NewLinksPageHandler(lps)
 	aS := apikey.NewApiKeyService(app)
 	h := handler.NewLinkHandler(s)
 	aH := handler.NewAPIKeyHandler(aS)
@@ -128,10 +137,20 @@ func main() {
 			links.GET("/user/:userId/clicks",
 				cache.CachePage(store, time.Minute, h.CountLinkClicksByUser()))
 		}
+
+		linksPage := api.Group("/links-page")
+		{
+			linksPage.POST("", lp.PostPage())
+			linksPage.GET(":alias", lp.GetPageByAddress())
+			linksPage.GET("/user/:userId", lp.GetAllPagesByUser())
+			linksPage.PUT("", lp.Update())
+			linksPage.DELETE("", lp.Delete())
+		}
 	}
 
 	// Start the HTTP server
 	if err := r.Run(":8080"); err != nil {
+		gin.SetMode(gin.ReleaseMode)
 		log.Fatalln("Error in Gin server: ", err.Error())
 	}
 }
