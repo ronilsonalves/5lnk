@@ -15,6 +15,10 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
+                hostname: 'cdn.5lnk.live'
+            },
+            {
+                protocol: 'https',
                 hostname: 'tailwindui.com',
             },
             {
