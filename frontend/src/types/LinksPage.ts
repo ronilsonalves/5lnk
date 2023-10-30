@@ -3,6 +3,7 @@ import Link from "./Link";
 export default interface LinksPage {
     id: string;
     alias: string;
+    userId?: string;
     title: string;
     description: string;
     imageURL: string;

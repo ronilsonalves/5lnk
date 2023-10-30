@@ -6,6 +6,7 @@ export default interface Link {
     shortened: string;
     finalUrl: string;
     userId: string;
+    pageRefer?: string;
     createdAt: Date;
     clicks: number;
 }
