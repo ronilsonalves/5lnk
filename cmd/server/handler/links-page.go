@@ -71,7 +71,7 @@ func (h *linksPageHandler) PostPage() gin.HandlerFunc {
 func (h *linksPageHandler) GetPageByAddress() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		address := ctx.Param("alias")
-		response, err := h.s.GetLinksPageByAddress(address)
+		response, err := h.s.GetLinksPageByAlias(address)
 		if err != nil {
 			if err.Error() == "record not found" {
 				web.BadResponse(ctx, http.StatusNotFound, "error", fmt.Errorf("the alias address `%s` not found", address).Error())

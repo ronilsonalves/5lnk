@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	FindById(id uuid.UUID) (domain.LinksPage, error)
 	FindByAddress(address string) (*domain.LinksPage, error)
+	FindByAlias(alias string) (*domain.LinksPage, error)
 	FindAllByUser(userId string) (*[]domain.LinksPage, error)
 	Create(linksPage *domain.LinksPage) error
 	Update(linksPage *domain.LinksPage) error
@@ -35,8 +36,8 @@ func (r *linksPageRepository) FindById(id uuid.UUID) (domain.LinksPage, error) {
 	return linksPage, nil
 }
 
-// FindByAddress finds a linksPage by the address
-func (r *linksPageRepository) FindByAddress(alias string) (*domain.LinksPage, error) {
+// FindByAlias finds a linksPage by the address
+func (r *linksPageRepository) FindByAlias(alias string) (*domain.LinksPage, error) {
 	var linksPage domain.LinksPage
 	if err := r.db.Where("alias = ?", alias).Preload("Links").First(&linksPage).Error; err != nil {
 		log.Printf("ERROR: unable to find the links page by address due to %v", err.Error())
@@ -44,6 +45,16 @@ func (r *linksPageRepository) FindByAddress(alias string) (*domain.LinksPage, er
 	}
 	log.Printf("INFO: updating views for links page: %v", linksPage.ID)
 	go r.db.Raw("UPDATE links_pages SET views = views + 1 WHERE id = ?", linksPage.ID).Scan(&linksPage)
+	return &linksPage, nil
+}
+
+// FindByAddress finds a linksPage by the address
+func (r *linksPageRepository) FindByAddress(finalURL string) (*domain.LinksPage, error) {
+	var linksPage domain.LinksPage
+	if err := r.db.Where("final_url = ?", finalURL).Preload("Links").First(&linksPage).Error; err != nil {
+		log.Printf("ERROR: unable to find the links page by address due to %v", err.Error())
+		return nil, err
+	}
 	return &linksPage, nil
 }
 
@@ -64,7 +75,7 @@ func (r *linksPageRepository) Create(linksPage *domain.LinksPage) error {
 
 // Update updates a linksPage
 func (r *linksPageRepository) Update(linksPage *domain.LinksPage) error {
-	return r.db.Updates(linksPage).Error
+	return r.db.Model(linksPage).Updates(linksPage).Error
 }
 
 // Delete deletes a linksPage

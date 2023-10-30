@@ -8,12 +8,13 @@ import (
 	"github.com/ronilsonalves/5lnk/pkg/web"
 	"log"
 	"os"
+	"strings"
 	"time"
 )
 
 type Service interface {
 	Create(request web.CreateLinksPage) (domain.LinksPage, error)
-	GetLinksPageByAddress(address string) (*domain.LinksPage, error)
+	GetLinksPageByAlias(address string) (*domain.LinksPage, error)
 	GetAllByUser(userId string) (*[]domain.LinksPage, error)
 	Update(request domain.LinksPage) (domain.LinksPage, error)
 	Delete(request domain.LinksPage) error
@@ -29,9 +30,9 @@ func NewLinksPageService(r Repository, ls link.Service) Service {
 	return &linksPageService{r: r, ls: ls}
 }
 
-// GetLinksPageByAddress returns a linksPage by the address
-func (s *linksPageService) GetLinksPageByAddress(address string) (*domain.LinksPage, error) {
-	return s.r.FindByAddress(address)
+// GetLinksPageByAlias returns a linksPage by the alias
+func (s *linksPageService) GetLinksPageByAlias(address string) (*domain.LinksPage, error) {
+	return s.r.FindByAlias(address)
 }
 
 // GetAllByUser finds all linksPage by user
@@ -43,7 +44,7 @@ func (s *linksPageService) GetAllByUser(userId string) (*[]domain.LinksPage, err
 func (s *linksPageService) Create(request web.CreateLinksPage) (domain.LinksPage, error) {
 	log.Printf("INFO: validating data for linksPage: %v", request.Alias)
 	// Before create a new linksPage, check if the address already exists
-	if _, err := s.r.FindByAddress(request.Alias); err == nil {
+	if _, err := s.r.FindByAddress("https://" + request.Domain + "/" + request.Alias); err == nil {
 		log.Printf("ERROR: the alias address `%s` already exists.", request.Alias)
 		return domain.LinksPage{}, fmt.Errorf("the address `%s` already exists", request.Alias)
 	}
@@ -62,7 +63,7 @@ func (s *linksPageService) Create(request web.CreateLinksPage) (domain.LinksPage
 	for _, lnkReq := range request.Links {
 		shortURL := utils.GenerateRandomAlias("")
 		lnk := domain.Link{
-			Original:  lnkReq.URL,
+			Original:  lnkReq.Original,
 			Title:     lnkReq.Title,
 			Shortened: shortURL,
 			FinalURL:  "https://" + request.Domain + "/" + shortURL,
@@ -125,44 +126,41 @@ func (s *linksPageService) Update(request domain.LinksPage) (domain.LinksPage, e
 		return domain.LinksPage{}, err
 	}
 
-	var linksToSave []domain.Link
+	var linksToCreate []domain.Link
 	for _, lnkReq := range request.Links {
-		if lnkReq.ID.String() == "00000000-0000-0000-0000-000000000000" || lnkReq.ID.String() == "" {
-			shortURL := utils.GenerateRandomAlias("")
+		if strings.Compare(lnkReq.ID.String(), "00000000-0000-0000-0000-000000000000") == 0 {
+			short := utils.GenerateRandomAlias("")
 			lnk := domain.Link{
 				Original:  lnkReq.Original,
 				Title:     lnkReq.Title,
-				Shortened: shortURL,
-				FinalURL:  "https://" + request.Domain + "/" + shortURL,
+				Shortened: short,
+				FinalURL:  "https://" + request.Domain + "/" + short,
 				UserId:    request.UserId,
-				PageRefer: request.ID.String(),
 				CreatedAt: time.Now(),
+				PageRefer: pageUpdate.ID.String(),
 			}
-			linksToSave = append(linksToSave, lnk)
+			linksToCreate = append(linksToCreate, lnk)
 		}
 	}
 
 	for _, lnk := range request.Links {
-		if lnk.ID.String() != "00000000-0000-0000-0000-000000000000" || lnk.ID.String() != "" {
+		if strings.Compare(lnk.ID.String(), "00000000-0000-0000-0000-000000000000") != 0 {
 			if _, err := s.ls.Update(lnk); err != nil {
-				log.Printf("ERROR: unable to update all links from links page `%s` due to %v", request.Alias, err.Error())
-				return domain.LinksPage{}, err
+				log.Printf("ERROR: unable to update the link `%v` due to %v", lnk, err.Error())
 			}
 		}
 	}
 
-	request.Links = linksToSave
-	if err := s.r.Update(&request); err != nil {
-		log.Printf("ERROR: unable to update the linksPage due to %v", err.Error())
-		return domain.LinksPage{}, err
-	}
+	request.Links = linksToCreate
 	pageShortened.Shortened = request.Alias
 	pageShortened.Original = os.Getenv("URL_SVC") + "/" + request.Alias
 	pageShortened.Title = request.Title
 	pageShortened.FinalURL = "https://" + request.Domain + "/" + request.Alias
 	_, err = s.ls.Update(*pageShortened)
+
 	if err != nil {
 		log.Printf("ERROR: unable to update the shortened URL for the linksPage: %v", err.Error())
+		return domain.LinksPage{}, fmt.Errorf("unable to update the links page due to %v", err)
 	}
 
 	if err := s.r.Update(&request); err == nil {

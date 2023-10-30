@@ -12,8 +12,8 @@ type CreateLinksPage struct {
 }
 
 type links struct {
-	URL   string `json:"url" binding:"required"`
-	Title string `json:"title" binding:"required"`
+	Original string `json:"original" binding:"required"`
+	Title    string `json:"title" binding:"required"`
 }
 
 // CreateShortenURL represents the request to create a new shortened URL

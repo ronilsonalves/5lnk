@@ -39,17 +39,18 @@ func (s *linkService) GetLink(linkId uuid.UUID) (*domain.Link, error) {
 
 // ShortenURL creates a new shortened URL
 func (s *linkService) ShortenURL(request web.CreateShortenURL) (domain.Link, error) {
-	// Check if the URL already exists in the database
-	link, err := s.repo.FindByOriginal(request.URL)
-	if err == nil && request.UserId == "" || !strings.HasPrefix(request.UserId, "CREATED_BY_SYSTEM_") {
-		return *link, nil
+	if request.UserId == "" || !strings.HasPrefix(request.UserId, "CREATED_BY_SYSTEM_") {
+		link, err := s.repo.FindByOriginal(request.URL)
+		if err == nil {
+			return *link, nil
+		}
 	}
 
 	// Generate a new shortened URL
 	shortened := utils.GenerateRandomAlias(request.Alias)
 
 	// Create a new Link object
-	link = &domain.Link{
+	var link = &domain.Link{
 		Original:  request.URL,
 		Shortened: shortened,
 		FinalURL:  "https://" + request.ShortDomain + "/" + shortened,
@@ -89,6 +90,7 @@ func (s *linkService) GetShortenedByOriginal(original string) (*domain.Link, err
 
 // GetAllByUser returns all shortened links by user
 func (s *linkService) GetAllByUser(userId string) (*[]domain.Link, error) {
+	log.Printf("INFO: getting all links pages by userId `%v`...", userId)
 	return s.repo.FindAllByUser(userId)
 }
 
