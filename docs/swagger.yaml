@@ -11,10 +11,41 @@ definitions:
         type: string
       original:
         type: string
+      pageRefer:
+        type: string
       shortened:
+        type: string
+      title:
         type: string
       userId:
         type: string
+    type: object
+  domain.LinksPage:
+    properties:
+      alias:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      domain:
+        type: string
+      finalURL:
+        type: string
+      id:
+        type: string
+      imageURL:
+        type: string
+      links:
+        items:
+          $ref: '#/definitions/domain.Link'
+        type: array
+      title:
+        type: string
+      userId:
+        type: string
+      views:
+        type: integer
     type: object
   web.APIKey:
     properties:
@@ -23,11 +54,42 @@ definitions:
     required:
     - userId
     type: object
-  web.ShortenURL:
+  web.CreateLinksPage:
+    properties:
+      alias:
+        type: string
+      description:
+        type: string
+      domain:
+        type: string
+      imageURL:
+        type: string
+      links:
+        items:
+          $ref: '#/definitions/web.links'
+        type: array
+      title:
+        type: string
+      userId:
+        type: string
+    required:
+    - alias
+    - description
+    - domain
+    - imageURL
+    - links
+    - title
+    - userId
+    type: object
+  web.CreateShortenURL:
     properties:
       alias:
         type: string
       domain:
+        type: string
+      pageRefer:
+        type: string
+      title:
         type: string
       url:
         type: string
@@ -35,22 +97,6 @@ definitions:
         type: string
     required:
     - url
-    type: object
-  web.ShortenedURL:
-    properties:
-      id:
-        type: string
-      original:
-        type: string
-      shortened:
-        type: string
-      userId:
-        type: string
-    required:
-    - id
-    - original
-    - shortened
-    - userId
     type: object
   web.errorResponse:
     properties:
@@ -62,6 +108,16 @@ definitions:
         type: integer
       timeStamp:
         type: string
+    type: object
+  web.links:
+    properties:
+      original:
+        type: string
+      title:
+        type: string
+    required:
+    - original
+    - title
     type: object
 info:
   contact:
@@ -197,7 +253,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/web.ShortenedURL'
+          $ref: '#/definitions/domain.Link'
       produces:
       - application/json
       responses:
@@ -205,6 +261,10 @@ paths:
           description: No Content
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/web.errorResponse'
         "404":
@@ -224,7 +284,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/web.ShortenURL'
+          $ref: '#/definitions/web.CreateShortenURL'
       produces:
       - application/json
       responses:
@@ -234,6 +294,10 @@ paths:
             $ref: '#/definitions/domain.Link'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/web.errorResponse'
       summary: Create a shortened link from a URL address and a provided alias
@@ -249,7 +313,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/web.ShortenedURL'
+          $ref: '#/definitions/domain.Link'
       produces:
       - application/json
       responses:
@@ -261,6 +325,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
         "404":
           description: Not Found
           schema:
@@ -268,6 +336,160 @@ paths:
       summary: Update a shortened link from a URL address and a provided alias
       tags:
       - Links
+  /api/v1/links-page:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a linksPage.
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.LinksPage'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Delete a linksPage
+      tags:
+      - LinksPage
+    post:
+      consumes:
+      - application/json
+      description: Create a new linksPage.
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/web.CreateLinksPage'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.LinksPage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Create a new linksPage
+      tags:
+      - LinksPage
+    put:
+      consumes:
+      - application/json
+      description: Update a linksPage.
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.LinksPage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.LinksPage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Update a linksPage
+      tags:
+      - LinksPage
+  /api/v1/links-page/{address}:
+    get:
+      consumes:
+      - application/json
+      description: Get a linksPage by address.
+      parameters:
+      - description: Page address
+        in: path
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.LinksPage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Get a linksPage
+      tags:
+      - LinksPage
+  /api/v1/links-page/user/{userId}:
+    get:
+      consumes:
+      - application/json
+      description: Get all linksPage by user.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.LinksPage'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Get all linksPage by user
+      tags:
+      - LinksPage
   /api/v1/links/{id}:
     get:
       consumes:
@@ -288,6 +510,14 @@ paths:
             $ref: '#/definitions/domain.Link'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/web.errorResponse'
       summary: Get a shortened link from a URL address and a provided alias
@@ -317,6 +547,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
       summary: Get all shortened links by user
       tags:
       - Links
@@ -342,6 +576,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
       summary: Count the number of clicks by user
       tags:
       - Links
@@ -365,6 +603,10 @@ paths:
             type: integer
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/web.errorResponse'
       summary: Count the number of shortened links by user
