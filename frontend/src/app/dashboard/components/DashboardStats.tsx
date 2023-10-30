@@ -10,7 +10,7 @@ import {
   FolderIcon,
   RectangleGroupIcon,
 } from "@heroicons/react/24/outline";
-import { getLinkStats } from "@/lib/hooks/useLinks";
+import { getUserOverviewStats } from "@/lib/hooks/useStats";
 import Stats from "@/types/Stats";
 
 export default function DashboardStats() {
@@ -23,7 +23,7 @@ export default function DashboardStats() {
   });
 
   useEffect(() => {
-    getLinkStats(userAccessToken, setStats, setError);
+    getUserOverviewStats(userAccessToken, setStats, setError);
   }, []);
 
   return (
@@ -36,7 +36,7 @@ export default function DashboardStats() {
             <LinkIcon className="w-8 h-8" />
           </div>
           <div className="stat-title text-white">Total shortened links</div>
-          <div className="stat-value">{stats?.count}</div>
+          <div className="stat-value">{stats?.links.total}</div>
         </div>
         </Suspense>
 
@@ -45,7 +45,7 @@ export default function DashboardStats() {
             <PresentationChartLineIcon className="w-8 h-8" />
           </div>
           <div className="stat-title text-white">Total link clicks</div>
-          <div className="stat-value text-white">{stats?.clicks}</div>
+          <div className="stat-value text-white">{stats?.links.clicks}</div>
           <div className="stat-desc text-white">Lifetime</div>
         </div>
 
@@ -54,17 +54,16 @@ export default function DashboardStats() {
             <ArrowTrendingUpIcon className="w-8 h-8" />
           </div>
           <div className="stat-title text-white">Total page views</div>
-          <div className="stat-value text-white">0</div>
-          <div className="stat-desc badge badge-secondary">COMING SOON</div>
+          <div className="stat-value text-white">{stats?.pages.views}</div>
+          <div className="stat-desc text-white">Lifetime</div>
         </div>
 
         <div className="stat bg-primary text-primary-content rounded">
           <div className="stat-figure text-white">
             <RectangleGroupIcon className="w-8 h-8" />
           </div>
-          <div className="stat-title text-white">Biolink pages</div>
-          <div className="stat-value text-white">0</div>
-          <div className="stat-desc badge badge-secondary">COMING SOON</div>
+          <div className="stat-title text-white">Links pages</div>
+          <div className="stat-value text-white">{stats?.pages.total}</div>
         </div>
 
         <div className="stat bg-primary text-primary-content rounded">

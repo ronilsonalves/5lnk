@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import {NextRequest, NextResponse} from "next/server";
 
 export async function GET(request: NextRequest) {
   if (
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   }
   const apiResponse = await fetch(
     process.env.NEXT_BACKEND_API_URL +
-      "links-page/" +
+      "pages/" +
       request.nextUrl.searchParams.get("alias"),
     {
       method: "GET",
@@ -36,12 +36,10 @@ export async function GET(request: NextRequest) {
 
   const data = await apiResponse.json();
 
-  const response = new NextResponse(JSON.stringify(data), {
-    status: apiResponse.status,
-    headers: {
-      "Content-Type": "application/json",
-    },
+  return new NextResponse(JSON.stringify(data), {
+      status: apiResponse.status,
+      headers: {
+          "Content-Type": "application/json",
+      },
   });
-
-  return response;
-};
+}

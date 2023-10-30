@@ -19,8 +19,6 @@ type Service interface {
 	GetShortenedByOriginal(original string) (*domain.Link, error)
 	GetAllByUser(userId string) (*[]domain.Link, error)
 	Delete(shortened domain.Link) error
-	CountLinksByUser(userId string) (int64, error)
-	CountLinkClicksByUser(userId string) (int64, error)
 }
 
 type linkService struct {
@@ -100,16 +98,6 @@ func (s *linkService) Update(request domain.Link) (domain.Link, error) {
 		return domain.Link{}, err
 	}
 	return request, nil
-}
-
-// CountLinksByUser counts the number of shortened links by user
-func (s *linkService) CountLinksByUser(userId string) (int64, error) {
-	return s.repo.CountLinksByUser(userId)
-}
-
-// CountLinkClicksByUser counts the number of clicks by user
-func (s *linkService) CountLinkClicksByUser(userId string) (int64, error) {
-	return s.repo.CountLinkClicksByUser(userId)
 }
 
 // Delete deletes a link

@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
   };
 
   const apiResponse = await fetch(
-    process.env.NEXT_BACKEND_API_URL + "links-page",
+    process.env.NEXT_BACKEND_API_URL + "pages",
     {
       method: "POST",
       headers: {
@@ -183,7 +183,7 @@ export async function PUT(request: NextRequest) {
   });
 
   const apiResponse = await fetch(
-    process.env.NEXT_BACKEND_API_URL + "links-page",
+    process.env.NEXT_BACKEND_API_URL + "pages",
     {
       method: "PUT",
       headers: {
@@ -246,7 +246,7 @@ export async function DELETE(request: NextRequest) {
   }
 
   const apiResponse = await fetch(
-    process.env.NEXT_BACKEND_API_URL + "links-page",
+    process.env.NEXT_BACKEND_API_URL + "pages",
     {
       method: "DELETE",
       headers: {

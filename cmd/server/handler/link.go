@@ -117,60 +117,6 @@ func (h *linkHandler) Update() gin.HandlerFunc {
 	}
 }
 
-// CountLinksByUser counts the number of shortened links by user.
-// @BasePath /api/v1
-// CountLinksByUser godoc
-// @Summary Count the number of shortened links by user
-// @Schemes
-// @Description Count the number of shortened links by user.
-// @Tags Links
-// @Accept json
-// @Produce json
-// @Param userId path string true "User ID"
-// @Success 200 {object} int64
-// @Failure 400 {object} web.errorResponse
-// @Failure 401 {object} web.errorResponse
-// @Router /api/v1/links/user/{userId}/count [GET]
-func (h *linkHandler) CountLinksByUser() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		userID := ctx.Param("userId")
-		response, err := h.s.CountLinksByUser(userID)
-		if err != nil {
-			web.BadResponse(ctx, http.StatusBadRequest, "error", err.Error())
-			return
-		}
-
-		web.ResponseOK(ctx, http.StatusOK, response)
-	}
-}
-
-// CountLinkClicksByUser counts the number of clicks by user.
-// @BasePath /api/v1
-// CountLinkClicksByUser godoc
-// @Summary Count the number of clicks by user
-// @Schemes
-// @Description Count the number of clicks by user.
-// @Tags Links
-// @Accept json
-// @Produce json
-// @Param userId path string true "User ID"
-// @Success 200 {object} int64
-// @Failure 400 {object} web.errorResponse
-// @Failure 401 {object} web.errorResponse
-// @Router /api/v1/links/user/{userId}/clicks [GET]
-func (h *linkHandler) CountLinkClicksByUser() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		userID := ctx.Param("userId")
-		response, err := h.s.CountLinkClicksByUser(userID)
-		if err != nil {
-			web.BadResponse(ctx, http.StatusBadRequest, "error", err.Error())
-			return
-		}
-
-		web.ResponseOK(ctx, http.StatusOK, response)
-	}
-}
-
 // Delete delete a shortened link.
 // @BasePath /api/v1
 // Delete godoc

@@ -26,14 +26,14 @@ func NewLinksPageHandler(s linkspage.Service) *linksPageHandler {
 // @Summary Create a new linksPage
 // @Schemes
 // @Description Create a new linksPage.
-// @Tags LinksPage
+// @Tags Pages
 // @Accept json
 // @Produce json
 // @Param body body web.CreateLinksPage true "Body"
 // @Success 201 {object} domain.LinksPage
 // @Failure 400 {object} web.errorResponse
 // @Failure 401 {object} web.errorResponse
-// @Router /api/v1/links-page [POST]
+// @Router /api/v1/pages [POST]
 func (h *linksPageHandler) PostPage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var request web.CreateLinksPage
@@ -54,27 +54,27 @@ func (h *linksPageHandler) PostPage() gin.HandlerFunc {
 	}
 }
 
-// GetPageByAddress returns a linksPage by address.
+// GetPageByAlias returns a linksPage by alias.
 // @BasePath /api/v1
-// GetPageByAddress godoc
+// GetPageByAlias godoc
 // @Summary Get a linksPage
 // @Schemes
-// @Description Get a linksPage by address.
-// @Tags LinksPage
+// @Description Get a linksPage by alias.
+// @Tags Pages
 // @Accept json
 // @Produce json
-// @Param address path string true "Page address"
+// @Param address path string true "Page alias"
 // @Success 200 {object} domain.LinksPage
 // @Failure 400 {object} web.errorResponse
 // @Failure 404 {object} web.errorResponse
-// @Router /api/v1/links-page/{address} [GET]
-func (h *linksPageHandler) GetPageByAddress() gin.HandlerFunc {
+// @Router /api/v1/pages/{alias} [GET]
+func (h *linksPageHandler) GetPageByAlias() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		address := ctx.Param("alias")
-		response, err := h.s.GetLinksPageByAlias(address)
+		alias := ctx.Param("alias")
+		response, err := h.s.GetLinksPageByAlias(alias)
 		if err != nil {
 			if err.Error() == "record not found" {
-				web.BadResponse(ctx, http.StatusNotFound, "error", fmt.Errorf("the alias address `%s` not found", address).Error())
+				web.BadResponse(ctx, http.StatusNotFound, "error", fmt.Errorf("the alias address `%s` not found", alias).Error())
 				return
 			}
 			web.BadResponse(ctx, http.StatusBadRequest, "error", err.Error())
@@ -91,14 +91,14 @@ func (h *linksPageHandler) GetPageByAddress() gin.HandlerFunc {
 // @Summary Get all linksPage by user
 // @Schemes
 // @Description Get all linksPage by user.
-// @Tags LinksPage
+// @Tags Pages
 // @Accept json
 // @Produce json
 // @Param userId path string true "User ID"
 // @Success 200 {object} []domain.LinksPage
 // @Failure 400 {object} web.errorResponse
 // @Failure 404 {object} web.errorResponse
-// @Router /api/v1/links-page/user/{userId} [GET]
+// @Router /api/v1/pages/user/{userId} [GET]
 func (h *linksPageHandler) GetAllPagesByUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		userId := ctx.Param("userId")
@@ -122,7 +122,7 @@ func (h *linksPageHandler) GetAllPagesByUser() gin.HandlerFunc {
 // @Summary Update a linksPage
 // @Schemes
 // @Description Update a linksPage.
-// @Tags LinksPage
+// @Tags Pages
 // @Accept json
 // @Produce json
 // @Param body body domain.LinksPage true "Body"
@@ -130,7 +130,7 @@ func (h *linksPageHandler) GetAllPagesByUser() gin.HandlerFunc {
 // @Failure 400 {object} web.errorResponse
 // @Failure 401 {object} web.errorResponse
 // @Failure 404 {object} web.errorResponse
-// @Router /api/v1/links-page [PUT]
+// @Router /api/v1/pages [PUT]
 func (h *linksPageHandler) Update() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var request domain.LinksPage
@@ -161,7 +161,7 @@ func (h *linksPageHandler) Update() gin.HandlerFunc {
 // @Summary Delete a linksPage
 // @Schemes
 // @Description Delete a linksPage.
-// @Tags LinksPage
+// @Tags Pages
 // @Accept json
 // @Produce json
 // @Param body body domain.LinksPage true "Body"
@@ -169,7 +169,7 @@ func (h *linksPageHandler) Update() gin.HandlerFunc {
 // @Failure 400 {object} web.errorResponse
 // @Failure 401 {object} web.errorResponse
 // @Failure 404 {object} web.errorResponse
-// @Router /api/v1/links-page [DELETE]
+// @Router /api/v1/pages [DELETE]
 func (h *linksPageHandler) Delete() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var request domain.LinksPage

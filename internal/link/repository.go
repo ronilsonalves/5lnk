@@ -12,8 +12,6 @@ type Repository interface {
 	FindByOriginal(original string) (*domain.Link, error)
 	FindByShortened(shortened string) (*domain.Link, error)
 	FindAllByUser(userId string) (*[]domain.Link, error)
-	CountLinksByUser(userId string) (int64, error)
-	CountLinkClicksByUser(userId string) (int64, error)
 	Create(link *domain.Link) error
 	Update(link *domain.Link) error
 	Delete(link *domain.Link) error
@@ -78,27 +76,6 @@ func (r *linkRepository) Update(link *domain.Link) error {
 // Create creates a new shortened URL
 func (r *linkRepository) Create(link *domain.Link) error {
 	return r.db.Create(link).Error
-}
-
-// CountLinksByUser counts the number of shortened links by user
-func (r *linkRepository) CountLinksByUser(userId string) (int64, error) {
-	var count int64
-	if err := r.db.Model(&domain.Link{}).Where("user_id = ?", userId).Count(&count).Error; err != nil {
-		return 0, err
-	}
-	return count, nil
-}
-
-// CountLinkClicksByUser counts the number of clicks by user
-func (r *linkRepository) CountLinkClicksByUser(userId string) (int64, error) {
-	var total int
-	if err := r.db.Raw("SELECT SUM(clicks) as total FROM links WHERE user_id = ?", userId).Scan(&total).Error; err != nil {
-		if err.Error() == `sql: Scan error on column index 0, name "total": converting NULL to int is unsupported` {
-			return 0, nil
-		}
-		return 0, err
-	}
-	return int64(total), nil
 }
 
 // Delete deletes a link
