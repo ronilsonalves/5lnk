@@ -8,10 +8,12 @@ import (
 
 type Link struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
-	Original  string    `gorm:"uniqueIndex" json:"original"`
+	Original  string    `gorm:"index" json:"original"`
+	Title     string    `json:"title"`
 	Shortened string    `gorm:"uniqueIndex" json:"shortened"`
 	FinalURL  string    `json:"finalUrl"`
 	UserId    string    `gorm:"index" json:"userId"`
+	PageRefer string    `gorm:"index,unsigned" json:"pageRefer"`
 	CreatedAt time.Time `json:"createdAt"`
 	Clicks    int       `json:"clicks"`
 }

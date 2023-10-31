@@ -49,12 +49,13 @@ Currently, I'm working in new features such a page of links, theme and language 
 Bellow you can see what is  planned for future implementation.
 
 - [ ] Change to server actions instead hooks.
-- [ ] Implement feat to allow users to build link pages.
+- [x] Implement feat to allow users to build link pages.
 - [ ] Implement alias for URL shortened
 - [ ] Improve analytics system
-- [ ] Implement Theme switch
+- [x] Implement Theme switch
 - [ ] Add internationalization
 - [ ] Automatize the deployment to my kubernetes cluster.
+- [ ] Add tests to the backend
 
 ## Contributing
 <i>Details soon</i>

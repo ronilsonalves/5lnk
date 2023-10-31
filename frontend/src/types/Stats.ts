@@ -1,4 +1,10 @@
 export default interface Stats {
-    clicks: number;
-    count: number;
+    links: {
+        clicks: number;
+        total: number;
+    }
+    pages: {
+        views: number;
+        total: number;
+    }
 }
