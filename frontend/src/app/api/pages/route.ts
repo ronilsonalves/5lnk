@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
   if (alias) {
     const apiResponse = await fetch(
       process.env.NEXT_BACKEND_API_URL +
-        "links-page/" +
+        "pages/" +
         request.nextUrl.searchParams.get("alias"),
       {
         method: "GET",
@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
 
   const apiResponse = await fetch(
     process.env.NEXT_BACKEND_API_URL +
-      "links-page/user/" +
+      "pages/user/" +
       tokens.decodedToken.uid,
     {
       method: "GET",
