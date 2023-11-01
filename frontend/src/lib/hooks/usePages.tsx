@@ -8,6 +8,7 @@ export const getPageBySlug = async (slug: string): Promise<LinksPage> => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${process.env.NEXT_FRONTEND_API_KEY}`,
             },
+            cache: "no-cache",
         });
         const data = await response.json();
         return data as LinksPage;
