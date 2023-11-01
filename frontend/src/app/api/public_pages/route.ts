@@ -1,6 +1,8 @@
 import {NextRequest, NextResponse} from "next/server";
 
 export async function GET(request: NextRequest) {
+  console.log("INFO: API Request {", request.nextUrl.pathname, request.nextUrl.searchParams.get("alias")+ "}");
+  
   if (
     !request.headers
       .get("Authorization")
@@ -21,6 +23,7 @@ export async function GET(request: NextRequest) {
       }
     );
   }
+
   const apiResponse = await fetch(
     process.env.NEXT_BACKEND_API_URL +
       "pages/" +
