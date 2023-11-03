@@ -25,8 +25,8 @@ type APIKey struct {
 	UserId string `json:"userId" binding:"required"`
 }
 
-// Stats represents the stats summary
-type Stats struct {
+// StatsOverview represents the stats summary
+type StatsOverview struct {
 	Links LinksSummary `json:"links"`
 	Pages PagesSummary `json:"pages"`
 }

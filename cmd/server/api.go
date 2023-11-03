@@ -57,6 +57,11 @@ func main() {
 		log.Fatalln("Error while migrating the LinksPage model")
 	}
 
+	// Auto migrate the Stats model
+	if err := db.AutoMigrate(&domain.Stats{}); err != nil {
+		log.Fatalln("Error while migrating the Stats model")
+	}
+
 	// Initialize the random number generator
 	rand.Seed(time.Now().UnixNano())
 
@@ -74,9 +79,9 @@ func main() {
 	s := link.NewLinkService(l)
 	lps := links_page.NewLinksPageService(lpr, s)
 	ss := stats.NewStatsService(sr)
-	lp := handler.NewLinksPageHandler(lps)
+	lp := handler.NewLinksPageHandler(lps, ss)
 	aS := apikey.NewApiKeyService(app)
-	h := handler.NewLinkHandler(s)
+	h := handler.NewLinkHandler(s, ss)
 	aH := handler.NewAPIKeyHandler(aS)
 	sh := handler.NewStatsHandler(ss)
 

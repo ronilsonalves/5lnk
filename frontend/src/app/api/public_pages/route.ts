@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
       headers: {
         "Content-Type": "application/json",
         Authorization: request.headers.get("Authorization")!,
+        "User-Agent": request.headers.get("User-Agent")!,
       },
     }
   );

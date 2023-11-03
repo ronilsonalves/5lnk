@@ -11,6 +11,11 @@ type Repository interface {
 	CountLinkClicksByUser(userId string) (int64, error)
 	CountPagesByUser(userId string) (int64, error)
 	CountPageViewsByUser(userId string) (int64, error)
+	CreateLinkStats(stats domain.Stats) error
+	CreatePageStats(stats domain.Stats) error
+	FindLinkStats(linkId string) ([]domain.Stats, error)
+	FindPageStats(pageId string) ([]domain.Stats, error)
+	Delete(statsId string) error
 }
 
 type statsRepository struct {
@@ -20,6 +25,49 @@ type statsRepository struct {
 // NewStatsRepository creates a new stats repository
 func NewStatsRepository(db *gorm.DB) Repository {
 	return &statsRepository{db: db}
+}
+
+// CreateLinkStats registers in database a new stats for a link
+func (r *statsRepository) CreateLinkStats(stats domain.Stats) error {
+	if err := r.db.Create(&stats).Error; err != nil {
+		log.Printf("ERROR: unable to register stats for link: %v", err.Error())
+		return err
+	}
+	return nil
+}
+
+// CreatePageStats registers in database a new stats for a page
+func (r *statsRepository) CreatePageStats(stats domain.Stats) error {
+	if err := r.db.Create(&stats).Error; err != nil {
+		log.Printf("ERROR: unable to register stats for page: %v", err.Error())
+		return err
+	}
+	return nil
+}
+
+// FindLinkStats returns all stats for a link
+func (r *statsRepository) FindLinkStats(linkId string) ([]domain.Stats, error) {
+	var stats []domain.Stats
+	if err := r.db.Where("link = ?", linkId).Find(&stats).Error; err != nil {
+		log.Printf("ERROR: unable to find stats for link: %v", err.Error())
+		return nil, err
+	}
+	return stats, nil
+}
+
+// FindPageStats returns all stats for a page
+func (r *statsRepository) FindPageStats(pageId string) ([]domain.Stats, error) {
+	var stats []domain.Stats
+	if err := r.db.Where("page = ?", pageId).Find(&stats).Error; err != nil {
+		log.Printf("ERROR: unable to find stats for page: %v", err.Error())
+		return nil, err
+	}
+	return stats, nil
+}
+
+// Delete removes a stats from database
+func (r *statsRepository) Delete(statsId string) error {
+	return r.db.Where("id = ?", statsId).Delete(&domain.Stats{}).Error
 }
 
 // CountLinksByUser returns the number of links created by the user

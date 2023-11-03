@@ -68,6 +68,9 @@ export async function middleware(request: NextRequest) {
     },
     handleError: async (error) => {
       console.error("Unhandled authentication error", { error });
+      if (!PRIVATE_PATHS.includes(request.nextUrl.pathname)) {
+        return NextResponse.next();
+      }
       return redirectToLogin(request);
     },
   });

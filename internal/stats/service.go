@@ -1,13 +1,16 @@
 package stats
 
-import "github.com/ronilsonalves/5lnk/pkg/web"
+import (
+	"github.com/ronilsonalves/5lnk/internal/domain"
+	"github.com/ronilsonalves/5lnk/pkg/web"
+)
 
 type Service interface {
-	GetUserStatsOverview(userId string) (web.Stats, error)
-	CountLinksByUser(userId string) (int64, error)
-	CountLinkClicksByUser(userId string) (int64, error)
-	CountPagesByUser(userId string) (int64, error)
-	CountPageViewsByUser(userId string) (int64, error)
+	GetUserStatsOverview(userId string) (web.StatsOverview, error)
+	RegisterLinkClick(stats domain.Stats) error
+	RegisterPageView(stats domain.Stats) error
+	GetLinkClicks(linkId string) ([]domain.Stats, error)
+	GetPageViews(pageId string) ([]domain.Stats, error)
 }
 
 type statsService struct {
@@ -20,28 +23,28 @@ func NewStatsService(r Repository) Service {
 }
 
 // GetUserStatsOverview returns a summary of the user links and pages stats
-func (s *statsService) GetUserStatsOverview(userId string) (web.Stats, error) {
-	links, err := s.CountLinksByUser(userId)
+func (s *statsService) GetUserStatsOverview(userId string) (web.StatsOverview, error) {
+	links, err := s.r.CountLinksByUser(userId)
 	if err != nil {
-		return web.Stats{}, err
+		return web.StatsOverview{}, err
 	}
 
-	clicks, err := s.CountLinkClicksByUser(userId)
+	clicks, err := s.r.CountLinkClicksByUser(userId)
 	if err != nil {
-		return web.Stats{}, err
+		return web.StatsOverview{}, err
 	}
 
-	pages, err := s.CountPagesByUser(userId)
+	pages, err := s.r.CountPagesByUser(userId)
 	if err != nil {
-		return web.Stats{}, err
+		return web.StatsOverview{}, err
 	}
 
-	views, err := s.CountPageViewsByUser(userId)
+	views, err := s.r.CountPageViewsByUser(userId)
 	if err != nil {
-		return web.Stats{}, err
+		return web.StatsOverview{}, err
 	}
 
-	return web.Stats{
+	return web.StatsOverview{
 		Links: web.LinksSummary{
 			Total:  links,
 			Clicks: clicks,
@@ -53,22 +56,22 @@ func (s *statsService) GetUserStatsOverview(userId string) (web.Stats, error) {
 	}, nil
 }
 
-// CountLinksByUser returns the number of links created by the user
-func (s *statsService) CountLinksByUser(userId string) (int64, error) {
-	return s.r.CountLinksByUser(userId)
+// RegisterLinkClick registers a new click for a link
+func (s *statsService) RegisterLinkClick(stats domain.Stats) error {
+	return s.r.CreateLinkStats(stats)
 }
 
-// CountLinkClicksByUser returns the number of clicks by the user
-func (s *statsService) CountLinkClicksByUser(userId string) (int64, error) {
-	return s.r.CountLinkClicksByUser(userId)
+// RegisterPageView registers a new view for a page
+func (s *statsService) RegisterPageView(stats domain.Stats) error {
+	return s.r.CreatePageStats(stats)
 }
 
-// CountPagesByUser returns the number of links pages created by the user
-func (s *statsService) CountPagesByUser(userId string) (int64, error) {
-	return s.r.CountPagesByUser(userId)
+// GetLinkClicks returns all clicks for a link
+func (s *statsService) GetLinkClicks(linkId string) ([]domain.Stats, error) {
+	return s.r.FindLinkStats(linkId)
 }
 
-// CountPageViewsByUser returns the number of views by the user
-func (s *statsService) CountPageViewsByUser(userId string) (int64, error) {
-	return s.r.CountPageViewsByUser(userId)
+// GetPageViews returns all views for a page
+func (s *statsService) GetPageViews(pageId string) ([]domain.Stats, error) {
+	return s.r.FindPageStats(pageId)
 }

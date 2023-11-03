@@ -18,6 +18,7 @@ type LinksPage struct {
 	FinalURL    string    `json:"finalURL"`
 	Views       int       `json:"views"`
 	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 // BeforeCreate initialize UUID.
