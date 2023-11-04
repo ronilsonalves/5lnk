@@ -9,8 +9,8 @@ type Service interface {
 	GetUserStatsOverview(userId string) (web.StatsOverview, error)
 	RegisterLinkClick(stats domain.Stats) error
 	RegisterPageView(stats domain.Stats) error
-	GetLinkClicks(linkId string) ([]domain.Stats, error)
-	GetPageViews(pageId string) ([]domain.Stats, error)
+	GetLinkStats(pagination web.Pagination, linkId string) (web.Pagination, error)
+	GetPageStats(pagination web.Pagination, pageId string) (web.Pagination, error)
 }
 
 type statsService struct {
@@ -66,12 +66,12 @@ func (s *statsService) RegisterPageView(stats domain.Stats) error {
 	return s.r.CreatePageStats(stats)
 }
 
-// GetLinkClicks returns all clicks for a link
-func (s *statsService) GetLinkClicks(linkId string) ([]domain.Stats, error) {
-	return s.r.FindLinkStats(linkId)
+// GetLinkStats returns all stats for a link
+func (s *statsService) GetLinkStats(pagination web.Pagination, linkId string) (web.Pagination, error) {
+	return s.r.FindLinkStats(pagination, linkId)
 }
 
-// GetPageViews returns all views for a page
-func (s *statsService) GetPageViews(pageId string) ([]domain.Stats, error) {
-	return s.r.FindPageStats(pageId)
+// GetPageStats returns all stats for a page
+func (s *statsService) GetPageStats(pagination web.Pagination, pageId string) (web.Pagination, error) {
+	return s.r.FindPageStats(pagination, pageId)
 }

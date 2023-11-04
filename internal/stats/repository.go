@@ -2,6 +2,8 @@ package stats
 
 import (
 	"github.com/ronilsonalves/5lnk/internal/domain"
+	"github.com/ronilsonalves/5lnk/internal/utils"
+	"github.com/ronilsonalves/5lnk/pkg/web"
 	"gorm.io/gorm"
 	"log"
 )
@@ -13,8 +15,8 @@ type Repository interface {
 	CountPageViewsByUser(userId string) (int64, error)
 	CreateLinkStats(stats domain.Stats) error
 	CreatePageStats(stats domain.Stats) error
-	FindLinkStats(linkId string) ([]domain.Stats, error)
-	FindPageStats(pageId string) ([]domain.Stats, error)
+	FindLinkStats(pagination web.Pagination, linkId string) (web.Pagination, error)
+	FindPageStats(pagination web.Pagination, pageId string) (web.Pagination, error)
 	Delete(statsId string) error
 }
 
@@ -46,23 +48,27 @@ func (r *statsRepository) CreatePageStats(stats domain.Stats) error {
 }
 
 // FindLinkStats returns all stats for a link
-func (r *statsRepository) FindLinkStats(linkId string) ([]domain.Stats, error) {
+func (r *statsRepository) FindLinkStats(pagination web.Pagination, linkId string) (web.Pagination, error) {
 	var stats []domain.Stats
-	if err := r.db.Where("link = ?", linkId).Find(&stats).Error; err != nil {
-		log.Printf("ERROR: unable to find stats for link: %v", err.Error())
-		return nil, err
+	if err := r.db.Scopes(utils.PaginateStatsByLinkRef(linkId, stats, &pagination, r.db)).Find(&stats).Error; err != nil {
+		log.Printf("ERROR: unable to find stats for link due to %v", err.Error())
+		return web.Pagination{}, err
 	}
-	return stats, nil
+	pagination.Data = stats
+	return pagination, nil
 }
 
 // FindPageStats returns all stats for a page
-func (r *statsRepository) FindPageStats(pageId string) ([]domain.Stats, error) {
+func (r *statsRepository) FindPageStats(pagination web.Pagination, pageId string) (web.Pagination, error) {
 	var stats []domain.Stats
-	if err := r.db.Where("page = ?", pageId).Find(&stats).Error; err != nil {
-		log.Printf("ERROR: unable to find stats for page: %v", err.Error())
-		return nil, err
+
+	if err := r.db.Scopes(utils.PaginateStatsByPageRef(pageId, stats, &pagination, r.db)).Find(&stats).Error; err != nil {
+		log.Printf("ERROR: unable to find stats for page due to %v", err.Error())
+		return web.Pagination{}, err
 	}
-	return stats, nil
+
+	pagination.Data = stats
+	return pagination, nil
 }
 
 // Delete removes a stats from database

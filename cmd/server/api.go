@@ -112,7 +112,7 @@ func main() {
 
 	//
 	r.GET("/",
-		cache.CachePage(store, time.Minute*10, func(c *gin.Context) {
+		cache.CachePage(store, time.Minute*360, func(c *gin.Context) {
 			c.Redirect(http.StatusMovedPermanently, "https://5lnk.live/?source=api_endpoint")
 		}))
 
@@ -153,6 +153,14 @@ func main() {
 		}
 
 		st := api.Group("/stats")
+		{
+			st.GET("/link/:linkId",
+				cache.CachePage(store, time.Minute, sh.GetLinkStats()))
+		}
+		{
+			st.GET("/page/:pageId",
+				cache.CachePage(store, time.Minute, sh.GetPageStats()))
+		}
 		{
 			st.GET("/user/:userId",
 				cache.CachePage(store, time.Minute, sh.GetUserStatsOverview()))
