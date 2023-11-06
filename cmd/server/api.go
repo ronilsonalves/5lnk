@@ -158,12 +158,32 @@ func main() {
 				cache.CachePage(store, time.Minute, sh.GetLinkStats()))
 		}
 		{
+			st.GET("/link/:linkId/stats",
+				cache.CachePage(store, time.Minute, sh.GetLinkStatsByDate()))
+		}
+		{
 			st.GET("/page/:pageId",
 				cache.CachePage(store, time.Minute, sh.GetPageStats()))
 		}
 		{
+			st.GET("/page/:pageId/stats",
+				cache.CachePage(store, time.Minute, sh.GetPageStatsByDate()))
+		}
+		{
 			st.GET("/user/:userId",
+				cache.CachePage(store, time.Minute, sh.GetStatsByUserId()))
+		}
+		{
+			st.GET("/user/:userId/overview",
 				cache.CachePage(store, time.Minute, sh.GetUserStatsOverview()))
+		}
+		{
+			st.GET("/user/:userId/links",
+				cache.CachePage(store, time.Minute, sh.GetLinkStatsByUserIdAndDate()))
+		}
+		{
+			st.GET("/user/:userId/pages",
+				cache.CachePage(store, time.Minute, sh.GetPageStatsByUserIdAndDate()))
 		}
 	}
 

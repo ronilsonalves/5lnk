@@ -1,6 +1,7 @@
 package stats
 
 import (
+	"github.com/google/uuid"
 	"github.com/ronilsonalves/5lnk/internal/domain"
 	"github.com/ronilsonalves/5lnk/internal/utils"
 	"github.com/ronilsonalves/5lnk/pkg/web"
@@ -15,8 +16,13 @@ type Repository interface {
 	CountPageViewsByUser(userId string) (int64, error)
 	CreateLinkStats(stats domain.Stats) error
 	CreatePageStats(stats domain.Stats) error
+	FindStatsByUser(pagination web.Pagination, userId string) (web.Pagination, error)
 	FindLinkStats(pagination web.Pagination, linkId string) (web.Pagination, error)
 	FindPageStats(pagination web.Pagination, pageId string) (web.Pagination, error)
+	FindLinkStatsByUserAndDate(userId, startDate, endDate string) (*[]web.StatsByDate, error)
+	FindPageStatsByUserAndDate(userId, startDate, endDate string) (*[]web.StatsByDate, error)
+	CountPageStatsByDate(pageId uuid.UUID, startDate, endDate string) (*[]web.StatsByDate, error)
+	CountLinkStatsByDate(linkId uuid.UUID, startDate, endDate string) (*[]web.StatsByDate, error)
 	Delete(statsId string) error
 }
 
@@ -47,6 +53,43 @@ func (r *statsRepository) CreatePageStats(stats domain.Stats) error {
 	return nil
 }
 
+// FindLinkStatsByUserAndDate returns all link stats for a user and date
+func (r *statsRepository) FindLinkStatsByUserAndDate(userId, startDate, endDate string) (*[]web.StatsByDate, error) {
+	var userLinkStatsByDate []web.StatsByDate
+	if err := r.db.Raw("SELECT DATE(timestamp) as date, os, browser, COUNT(stats.id) as total from stats INNER JOIN links ON links.id::text = link_refer WHERE links.user_id = ? AND DATE(timestamp) BETWEEN ? AND ? GROUP BY DATE(timestamp), os, browser", userId, startDate, endDate).Scan(&userLinkStatsByDate).Error; err != nil {
+		log.Printf("ERROR: unable to find the user link stats by date due to %v", err.Error())
+		return &[]web.StatsByDate{}, err
+	}
+	for _, s := range userLinkStatsByDate {
+		s.Date = s.Date[0:10]
+	}
+	return &userLinkStatsByDate, nil
+}
+
+// FindPageStatsByUserAndDate returns all page stats for a user and date
+func (r *statsRepository) FindPageStatsByUserAndDate(userId, startDate, endDate string) (*[]web.StatsByDate, error) {
+	var userPageStatsByDate []web.StatsByDate
+	if err := r.db.Raw("SELECT DATE(timestamp) as date, os, browser, COUNT(stats.id) as total from stats INNER JOIN links_pages as l ON l.id::text = page_refer WHERE l.user_id = ? AND DATE(timestamp) BETWEEN ? AND ? GROUP BY DATE(timestamp), os, browser", userId, startDate, endDate).Scan(&userPageStatsByDate).Error; err != nil {
+		log.Printf("ERROR: unable to find the user page stats by date due to %v", err.Error())
+		return &[]web.StatsByDate{}, err
+	}
+	for _, s := range userPageStatsByDate {
+		s.Date = s.Date[0:10]
+	}
+	return &userPageStatsByDate, nil
+}
+
+// FindStatsByUser returns all stats for a user
+func (r *statsRepository) FindStatsByUser(pagination web.Pagination, userId string) (web.Pagination, error) {
+	var stats []domain.Stats
+	if err := r.db.Scopes(utils.PaginateStatsByUserID(userId, stats, &pagination, r.db)).Find(&stats).Error; err != nil {
+		log.Printf("ERROR: unable to list stats by user: %v", err.Error())
+		return web.Pagination{}, err
+	}
+	pagination.Data = stats
+	return pagination, nil
+}
+
 // FindLinkStats returns all stats for a link
 func (r *statsRepository) FindLinkStats(pagination web.Pagination, linkId string) (web.Pagination, error) {
 	var stats []domain.Stats
@@ -69,6 +112,32 @@ func (r *statsRepository) FindPageStats(pagination web.Pagination, pageId string
 
 	pagination.Data = stats
 	return pagination, nil
+}
+
+// CountPageStatsByDate returns the number of views by date
+func (r *statsRepository) CountPageStatsByDate(pageId uuid.UUID, startDate, endDate string) (*[]web.StatsByDate, error) {
+	var statsByDate []web.StatsByDate
+	if err := r.db.Raw("SELECT DATE(timestamp) as date, os, browser, COUNT(id) as total FROM stats WHERE page_refer = ? AND DATE(timestamp) BETWEEN ? AND ? GROUP BY DATE(timestamp), os, browser", pageId, startDate, endDate).Scan(&statsByDate).Error; err != nil {
+		log.Printf("ERROR: unable to count the number of views by date: %v", err.Error())
+		return &[]web.StatsByDate{}, err
+	}
+	for _, s := range statsByDate {
+		s.Date = s.Date[0:10]
+	}
+	return &statsByDate, nil
+}
+
+// CountLinkStatsByDate returns the number of clicks by date
+func (r *statsRepository) CountLinkStatsByDate(linkId uuid.UUID, startDate, endDate string) (*[]web.StatsByDate, error) {
+	var statsByDate []web.StatsByDate
+	if err := r.db.Raw("SELECT DATE(timestamp) as date, os, browser, COUNT(id) as total FROM stats WHERE link_refer = ? AND DATE(timestamp) BETWEEN ? AND ? GROUP BY DATE(timestamp), os, browser", linkId, startDate, endDate).Scan(&statsByDate).Error; err != nil {
+		log.Printf("ERROR: unable to count the number of clicks by date: %v", err.Error())
+		return &[]web.StatsByDate{}, err
+	}
+	for _, s := range statsByDate {
+		s.Date = s.Date[0:10]
+	}
+	return &statsByDate, nil
 }
 
 // Delete removes a stats from database

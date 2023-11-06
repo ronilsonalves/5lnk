@@ -23,10 +23,51 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const analytics = request.nextUrl.searchParams.get("analytics");
+  const linkId = request.nextUrl.searchParams.get("linkId");
+
+  if (analytics) {
+    const apiResponse = await fetch(process.env.NEXT_BACKEND_API_URL + "stats/user/" + tokens.decodedToken.uid, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + tokens.token,
+      },
+    });
+
+    const data = await apiResponse.json();
+
+    return new NextResponse(JSON.stringify(data), {
+      status: apiResponse.status,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
+  if (linkId) {
+    const apiResponse = await fetch(process.env.NEXT_BACKEND_API_URL + "stats/link/" + linkId, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + tokens.token,
+      },
+    });
+
+    const data = await apiResponse.json();
+
+    return new NextResponse(JSON.stringify(data), {
+      status: apiResponse.status,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
   const apiResponse = await fetch(
     process.env.NEXT_BACKEND_API_URL +
       "stats/user/" +
-      tokens.decodedToken.uid,
+      tokens.decodedToken.uid + "/overview",
     {
       method: "GET",
       headers: {
