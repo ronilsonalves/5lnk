@@ -1,14 +1,11 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import {
-  authentication,
-  refreshAuthCookies,
-} from "next-firebase-auth-edge/lib/next/middleware";
+import { authentication } from "next-firebase-auth-edge/lib/next/middleware";
 import { getFirebaseAuth } from "next-firebase-auth-edge/lib/auth";
 import { authConfig } from "@config/server-config";
 
 const PUBLIC_PATHS = ["/", "/blog", "/pages", "/auth/register", "/auth/login", "/auth/recover"];
-const PRIVATE_PATHS = ["/dashboard", "/dashboard/links", "/dashboard/pages", "/api", "/profile"];
+const PRIVATE_PATHS = ["/dashboard", "/dashboard/analytics", "/dashboard/links", "/dashboard/pages", "/api", "/profile"];
 
 const { getUser } = getFirebaseAuth(
   authConfig.serviceAccount,
@@ -68,6 +65,9 @@ export async function middleware(request: NextRequest) {
     },
     handleError: async (error) => {
       console.error("Unhandled authentication error", { error });
+      if (!PRIVATE_PATHS.includes(request.nextUrl.pathname)) {
+        return NextResponse.next();
+      }
       return redirectToLogin(request);
     },
   });

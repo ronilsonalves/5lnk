@@ -25,8 +25,8 @@ type APIKey struct {
 	UserId string `json:"userId" binding:"required"`
 }
 
-// Stats represents the stats summary
-type Stats struct {
+// StatsOverview represents the stats summary
+type StatsOverview struct {
 	Links LinksSummary `json:"links"`
 	Pages PagesSummary `json:"pages"`
 }
@@ -44,4 +44,12 @@ type LinksSummary struct {
 type PagesSummary struct {
 	Total int64 `json:"total"`
 	Views int64 `json:"views"`
+}
+
+// StatsByDate represents the stats grouped by date
+type StatsByDate struct {
+	Total   int64  `json:"total"`
+	Date    string `json:"date"`
+	OS      string `json:"os"`
+	Browser string `json:"browser"`
 }

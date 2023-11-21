@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import LinksPage from "@/types/LinksPage";
 import { getPageBySlug } from "@/lib/hooks/usePages";
 import Links from "@/components/links-page/Links";
@@ -33,8 +34,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+/**
+ * Fetches page data for a given slug.
+ * @param slug - The slug of the page to fetch.
+ * @returns A Promise that resolves to a LinksPage object.
+ */
 async function fechPageData(slug: string): Promise<LinksPage> {
-  return getPageBySlug(slug);
+  const headersList = headers();
+  const userAgent = headersList.get("user-agent");
+  return getPageBySlug(slug, userAgent!);
 }
 
 export default async function LinksPage({

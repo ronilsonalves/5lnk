@@ -5,17 +5,24 @@ import (
 	"github.com/google/uuid"
 	"github.com/ronilsonalves/5lnk/internal/domain"
 	"github.com/ronilsonalves/5lnk/internal/link"
+	"github.com/ronilsonalves/5lnk/internal/stats"
+	"github.com/ronilsonalves/5lnk/pkg/middleware"
 	"github.com/ronilsonalves/5lnk/pkg/web"
+	"log"
 	"net/http"
+	"time"
 )
 
 type linkHandler struct {
-	s link.Service
+	s  link.Service
+	st stats.Service
 }
 
-func NewLinkHandler(s link.Service) *linkHandler {
+// NewLinkHandler creates a new link handler
+func NewLinkHandler(s link.Service, st stats.Service) *linkHandler {
 	return &linkHandler{
-		s: s,
+		s:  s,
+		st: st,
 	}
 }
 
@@ -117,7 +124,7 @@ func (h *linkHandler) Update() gin.HandlerFunc {
 	}
 }
 
-// Delete delete a shortened link.
+// Delete Delete a shortened link.
 // @BasePath /api/v1
 // Delete godoc
 // @Summary Delete a shortened link from a URL address and a provided alias
@@ -190,13 +197,28 @@ func (h *linkHandler) GetAllByUser() gin.HandlerFunc {
 // @Router /{shortened} [GET]
 func (h *linkHandler) RedirectShortenedURL() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		ua := middleware.GetFormattedUserAgent(ctx)
 		shortened := ctx.Param("shortened")
-		original, err := h.s.GetOriginalURL(shortened)
+		lnk, err := h.s.GetLinkByShortened(shortened)
 		if err != nil {
-			web.BadResponse(ctx, http.StatusNotFound, "error", "link not found")
+			web.BadResponse(ctx, http.StatusNotFound, "error", "lnk not found")
 			return
 		}
 
-		ctx.Redirect(http.StatusFound, original)
+		stat := domain.Stats{
+			LinkRefer: lnk.ID.String(),
+			Timestamp: time.Now(),
+			Os:        ua.OS,
+			Browser:   ua.Browser,
+		}
+
+		go func() {
+			err := h.st.RegisterLinkClick(stat)
+			if err != nil {
+				log.Printf("ERROR: unable to register stats for lnk: %v", err.Error())
+			}
+		}()
+
+		ctx.Redirect(http.StatusFound, lnk.Original)
 	}
 }

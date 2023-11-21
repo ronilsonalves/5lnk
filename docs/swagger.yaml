@@ -17,6 +17,8 @@ definitions:
         type: string
       title:
         type: string
+      updatedAt:
+        type: string
       userId:
         type: string
     type: object
@@ -41,6 +43,8 @@ definitions:
           $ref: '#/definitions/domain.Link'
         type: array
       title:
+        type: string
+      updatedAt:
         type: string
       userId:
         type: string
@@ -112,7 +116,32 @@ definitions:
       views:
         type: integer
     type: object
-  web.Stats:
+  web.Pagination:
+    properties:
+      TotalPages:
+        type: integer
+      data: {}
+      items:
+        type: integer
+      pageNumber:
+        type: integer
+      pageSize:
+        type: integer
+      sort:
+        type: string
+    type: object
+  web.StatsByDate:
+    properties:
+      browser:
+        type: string
+      date:
+        type: string
+      os:
+        type: string
+      total:
+        type: integer
+    type: object
+  web.StatsOverview:
     properties:
       links:
         $ref: '#/definitions/web.LinksSummary'
@@ -575,7 +604,271 @@ paths:
       summary: Get all linksPage by user
       tags:
       - Pages
+  /api/v1/stats/link/{linkId}:
+    get:
+      consumes:
+      - application/json
+      description: Returns all stats for a link in a pageable object.
+      parameters:
+      - description: Link ID
+        in: path
+        name: linkId
+        required: true
+        type: string
+      - description: Page Size
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: Page Number
+        in: query
+        name: pageNumber
+        required: true
+        type: integer
+      - description: Sort
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.Pagination'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Returns all stats for a link in a pageable object.
+      tags:
+      - Stats
+  /api/v1/stats/link/{linkId}/date:
+    get:
+      consumes:
+      - application/json
+      description: Returns all stats for a link grouped by date, by default the last
+        30 days.
+      parameters:
+      - description: Link ID
+        in: path
+        name: linkId
+        required: true
+        type: string
+      - description: Start Date
+        in: query
+        name: startDate
+        type: string
+      - description: End Date
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/web.StatsByDate'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Returns all stats for a link grouped by date, by default the last 30
+        days.
+      tags:
+      - Stats
+  /api/v1/stats/link/user/{userId}/links:
+    get:
+      consumes:
+      - application/json
+      description: Returns all stats from users' links grouped by date, by default
+        the last 30 days.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Start Date
+        in: query
+        name: startDate
+        type: string
+      - description: End Date
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/web.StatsByDate'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Returns all stats from users' links grouped by date, by default the
+        last 30 days.
+      tags:
+      - Stats
+  /api/v1/stats/page/{pageId}:
+    get:
+      consumes:
+      - application/json
+      description: Returns all stats for a page.
+      parameters:
+      - description: Page ID
+        in: path
+        name: pageId
+        required: true
+        type: string
+      - description: Page Size
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: Page Number
+        in: query
+        name: pageNumber
+        required: true
+        type: integer
+      - description: Sort
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.Pagination'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Returns all stats for a page in a pageable object.
+      tags:
+      - Stats
+  /api/v1/stats/page/{pageId}/date:
+    get:
+      consumes:
+      - application/json
+      description: Returns all stats for a page grouped by date, by default the last
+        30 days.
+      parameters:
+      - description: Link ID
+        in: path
+        name: linkId
+        required: true
+        type: string
+      - description: Start Date
+        in: query
+        name: startDate
+        type: string
+      - description: End Date
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/web.StatsByDate'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Returns all stats for a page grouped by date, by default the last 30
+        days.
+      tags:
+      - Stats
   /api/v1/stats/user/{userId}:
+    get:
+      consumes:
+      - application/json
+      description: Returns all stats for a user in a pageable object.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Page Size
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      - description: Page Number
+        in: query
+        name: pageNumber
+        required: true
+        type: integer
+      - description: Sort
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.Pagination'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Returns all stats for a user in a pageable object.
+      tags:
+      - Stats
+  /api/v1/stats/user/{userId}/overview:
     get:
       consumes:
       - application/json
@@ -592,7 +885,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.Stats'
+            $ref: '#/definitions/web.StatsOverview'
         "401":
           description: Unauthorized
           schema:
@@ -602,6 +895,51 @@ paths:
           schema:
             $ref: '#/definitions/web.errorResponse'
       summary: Returns a summary of the user links and pages stats.
+      tags:
+      - Stats
+  /api/v1/stats/user/{userId}/pages:
+    get:
+      consumes:
+      - application/json
+      description: Returns all stats from user pages grouped by date, by default the
+        last 30 days.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      - description: Start Date
+        in: query
+        name: startDate
+        type: string
+      - description: End Date
+        in: query
+        name: endDate
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/web.StatsByDate'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+        "503":
+          description: Service Unavailable
+          schema:
+            $ref: '#/definitions/web.errorResponse'
+      summary: Returns all stats from user pages grouped by date, by default the last
+        30 days.
       tags:
       - Stats
 swagger: "2.0"

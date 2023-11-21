@@ -5,18 +5,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ronilsonalves/5lnk/internal/domain"
 	linkspage "github.com/ronilsonalves/5lnk/internal/links-page"
+	"github.com/ronilsonalves/5lnk/internal/stats"
+	"github.com/ronilsonalves/5lnk/pkg/middleware"
 	"github.com/ronilsonalves/5lnk/pkg/web"
 	"log"
 	"net/http"
+	"time"
 )
 
 type linksPageHandler struct {
-	s linkspage.Service
+	s  linkspage.Service
+	st stats.Service
 }
 
-func NewLinksPageHandler(s linkspage.Service) *linksPageHandler {
+func NewLinksPageHandler(s linkspage.Service, st stats.Service) *linksPageHandler {
 	return &linksPageHandler{
-		s: s,
+		s:  s,
+		st: st,
 	}
 }
 
@@ -80,6 +85,21 @@ func (h *linksPageHandler) GetPageByAlias() gin.HandlerFunc {
 			web.BadResponse(ctx, http.StatusBadRequest, "error", err.Error())
 			return
 		}
+
+		ua := middleware.GetFormattedUserAgent(ctx)
+		stat := domain.Stats{
+			PageRefer: response.ID.String(),
+			Timestamp: time.Now(),
+			Os:        ua.OS,
+			Browser:   ua.Browser,
+		}
+
+		go func() {
+			err := h.st.RegisterPageView(stat)
+			if err != nil {
+				log.Printf("ERROR: unable to register page view due to %v", err.Error())
+			}
+		}()
 
 		web.ResponseOK(ctx, http.StatusOK, response)
 	}

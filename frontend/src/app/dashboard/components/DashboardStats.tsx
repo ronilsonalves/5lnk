@@ -29,8 +29,8 @@ export default function DashboardStats() {
   return (
     <>
       <h1 className="my-8 px-7 text-3xl font-bold">Dashboard</h1>
+      <Suspense fallback={<div>Loading...</div>}>
       <div className="px-7 grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-2 gap-4 ">
-        <Suspense fallback={<div>Loading...</div>}>
         <div className="stat bg-primary text-primary-content rounded">
           <div className="stat-figure text-white">
             <LinkIcon className="w-8 h-8" />
@@ -38,7 +38,6 @@ export default function DashboardStats() {
           <div className="stat-title text-white">Total shortened links</div>
           <div className="stat-value">{stats?.links.total}</div>
         </div>
-        </Suspense>
 
         <div className="stat bg-primary text-primary-content rounded">
           <div className="stat-figure text-white">
@@ -84,6 +83,12 @@ export default function DashboardStats() {
           <div className="stat-desc badge badge-secondary">COMING SOON</div>
         </div>
       </div>
+      <div className="flex flex-row-reverse my-4 pr-7">
+        <a href="/dashboard/analytics">
+          <button className="btn btn-primary">More stats</button>
+        </a>
+      </div>
+      </Suspense>
     </>
   );
 }

@@ -10,3 +10,4 @@ frontend/.vscode/settings.json
 /frontend/firebase.json
 /frontend/package-lock.json
 frontend/.contentlayer
+data/

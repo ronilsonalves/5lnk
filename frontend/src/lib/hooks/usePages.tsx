@@ -1,12 +1,20 @@
 import LinksPage from "@/types/LinksPage";
 
-export const getPageBySlug = async (slug: string): Promise<LinksPage> => {
+/**
+ * Retrieves a page by its slug.
+ * @param slug - The slug of the page to retrieve.
+ * @param userAgent - The user agent string to include in the request headers.
+ * @returns A promise that resolves to the LinksPage object representing the requested page.
+ * @throws An error if the data cannot be fetched.
+ */
+export const getPageBySlug = async (slug: string, userAgent: string): Promise<LinksPage> => {
     try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/public_pages/?alias=${slug}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${process.env.NEXT_FRONTEND_API_KEY}`,
+                "User-Agent": userAgent,
             },
             cache: "no-cache",
         });

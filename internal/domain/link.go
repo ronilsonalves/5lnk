@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+// TODO: remove click from link struct and use stats instead
+
+// Link struct is the representation of a shortened link.
 type Link struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
 	Original  string    `gorm:"index" json:"original"`
@@ -13,8 +16,9 @@ type Link struct {
 	Shortened string    `gorm:"uniqueIndex" json:"shortened"`
 	FinalURL  string    `json:"finalUrl"`
 	UserId    string    `gorm:"index" json:"userId"`
-	PageRefer string    `gorm:"index,unsigned" json:"pageRefer"`
+	PageRefer string    `gorm:"type:text;index,unsigned" json:"pageRefer"`
 	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 	Clicks    int       `json:"clicks"`
 }
 
