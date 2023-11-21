@@ -50,18 +50,11 @@ export default function Base({ children }: { children: React.ReactNode }) {
       enabled: true,
     },
     {
-      name: "Projects",
-      href: "#",
-      icon: FolderIcon,
-      current: true && pathname === "/dashboard/projects",
-      enabled: false,
-    },
-    {
       name: "Analytics",
-      href: "#",
+      href: "/dashboard/analytics",
       icon: ChartPieIcon,
       current: true && pathname === "/dashboard/analytics",
-      enabled: false,
+      enabled: true,
     },
   ];
 

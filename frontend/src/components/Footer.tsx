@@ -50,6 +50,7 @@ export default function Footer() {
             xmlns="http://www.w3.org/2000/svg"
             width="24"
             height="24"
+            fill="current-color"
             className="fill-current"
             viewBox="0 0 16 16"
           >
@@ -59,17 +60,18 @@ export default function Footer() {
           </svg>
         </a>
         <a
-          href="https://twitter.com/ronilsonalves"
+          href="https://x.com/ronilsonalves"
           title="Ronilson Alves on Twitter"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
             height="24"
-            viewBox="0 0 24 24"
+            viewBox="0 0 50 50"
+            fill="current-color"
             className="fill-current"
           >
-            <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path>
+            <path d="M 11 4 C 7.134 4 4 7.134 4 11 L 4 39 C 4 42.866 7.134 46 11 46 L 39 46 C 42.866 46 46 42.866 46 39 L 46 11 C 46 7.134 42.866 4 39 4 L 11 4 z M 13.085938 13 L 21.023438 13 L 26.660156 21.009766 L 33.5 13 L 36 13 L 27.789062 22.613281 L 37.914062 37 L 29.978516 37 L 23.4375 27.707031 L 15.5 37 L 13 37 L 22.308594 26.103516 L 13.085938 13 z M 16.914062 15 L 31.021484 35 L 34.085938 35 L 19.978516 15 L 16.914062 15 z"></path>
           </svg>
         </a>
         <a
@@ -81,6 +83,7 @@ export default function Footer() {
             width="24"
             height="24"
             viewBox="0 0 24 24"
+            fill="current-color"
             className="fill-current"
           >
             <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"></path>
@@ -90,14 +93,16 @@ export default function Footer() {
       <div>
         <p>Copyright © 2023 - All right reserved.</p>
         <p>
-          Built with ❤️ and <b>GoLang + Next.js</b> by{" "}
+          Built with ❤️ and <b>Go Lang 1.20 + Next.js 13.5.6</b> by{" "}
           <a href="https://www.ronilsonalves.com/?source=5lnk.live">
             <b>Ronilson Alves</b>
           </a>
         </p>
       </div>
       <div>
-        <span>Version: 0.3.1 from October, 23.</span>
+        <span>
+          <b>Version</b>: 0.3.2 from November, 23.
+        </span>
       </div>
     </footer>
   );
