@@ -30,7 +30,6 @@ export const getUserStatsByDate = async (
   endDate: string,
   object: "links" | "pages"
 ): Promise<StatsByDate[]> => {
-  console.log(startDate, endDate, object);
   try {
     const response = await fetch(
       `/api/stats?fetch=${object}&startDate=${

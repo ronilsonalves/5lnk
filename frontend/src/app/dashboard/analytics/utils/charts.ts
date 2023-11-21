@@ -17,13 +17,6 @@ export function generateStatsArrayWithoutDuplicates(
   stats: StatsByDate[],
   name: string
 ): Stats[] {
-  console.log(
-    "INFO: Generating stats array for ",
-    name,
-    " with ",
-    stats.length,
-    " stats"
-  );
   const statsArray = stats
     .map((stat: StatsByDate) => {
       if (name in stat) {
@@ -36,7 +29,6 @@ export function generateStatsArrayWithoutDuplicates(
     })
     .filter((stat): stat is Stats => stat !== undefined);
 
-  console.log("INFO: Removing duplicates from " + name + " stats array");
   for (let i = 0; i < statsArray.length; i++) {
     for (let j = i + 1; j < statsArray.length; j++) {
       if (
@@ -61,18 +53,10 @@ export function generateSeries(
   stats: Stats[],
   name: string
 ): ApexOptions["series"] {
-  console.log(
-    "INFO: Generating series for ",
-    name,
-    " with ",
-    stats.length,
-    " stats"
-  );
   const series = [] as ApexOptions["series"];
   if (series) {
     stats.forEach((stat) => {
       if (series.find((s) => typeof s === "object" && s.name === stat.key)) {
-        console.log("WARNING: Series already exists for ", stat.key);
         return;
       }
       if (stat.key === " ") {
@@ -99,7 +83,6 @@ export function generateSeries(
  * Generates ApexCharts options for a grouped chart.
  * @param group - The group to which the chart belongs.
  * @param name - The name of the chart.
- * @param xaxisTitle - The title of the x-axis.
  * @param xaxisType - The type of the x-axis. Can be "datetime", "category", or "numeric".
  * @param stats - An array of Stats objects containing the data to be plotted.
  * @param dateTimeFormat - The format of the date and time to be displayed on the x-axis. Only applicable if xaxisType is "datetime".
@@ -108,13 +91,11 @@ export function generateSeries(
 export function generateGroupedOptions(
   group: string,
   name: string,
-  xaxisTitle: string,
   xaxisType: "datetime" | "category" | "numeric",
   stats: Stats[],
   dateTimeFormat?: string
 ): ApexOptions {
-  console.log("INFO: Generating options for ", name);
-  const title = name.startsWith("links") ? "Clicks" : "Pageviews";
+  const title = name.startsWith("links") ? "Clicks" : "Views";
   return {
     chart: {
       id: name.toLowerCase().replaceAll(" ", "-") + "-chart",
@@ -145,7 +126,7 @@ export function generateGroupedOptions(
       type: xaxisType,
       categories: stats.map((stats) => new Date(stats.date).toLocaleString()),
       title: {
-        text: `${xaxisTitle} ${title.toLowerCase()} by date`,
+        text: `${group.split("s ")[0]} ${title.toLowerCase()} by date`,
       },
     },
     yaxis: {
@@ -153,7 +134,7 @@ export function generateGroupedOptions(
         text: title,
       },
       min: 0,
-      max: stats.reduce((m, stats) => Math.max(m, stats.total), 0) + 3.5,
+      max: stats.reduce((m, stats) => Math.max(m, stats.total), 0) + 2,
     },
     tooltip: {
       enabled: true,

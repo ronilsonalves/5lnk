@@ -22,7 +22,6 @@ const StatsChart: React.FC<StatsChartProps> = ({ stats, type, height }) => {
   const osOptions = generateGroupedOptions(
     type + " stats",
     type.toLowerCase()+"OS",
-    "OS",
     "datetime",
     os,
     "dd/MM/yy"
@@ -30,7 +29,6 @@ const StatsChart: React.FC<StatsChartProps> = ({ stats, type, height }) => {
   const browserOptions = generateGroupedOptions(
     type + " stats",
     type.toLowerCase()+"Browser",
-    "Browser",
     "datetime",
     browsers,
     "dd/MM/yy"
