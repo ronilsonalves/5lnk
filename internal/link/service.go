@@ -16,6 +16,7 @@ type Service interface {
 	GetLink(linkId uuid.UUID) (*domain.Link, error)
 	Update(shortened domain.Link) (domain.Link, error)
 	GetOriginalURL(shortened string) (string, error)
+	GetLinkByShortened(shortened string) (*domain.Link, error)
 	GetShortenedByOriginal(original string) (*domain.Link, error)
 	GetAllByUser(userId string) (*[]domain.Link, error)
 	Delete(shortened domain.Link) error
@@ -33,6 +34,11 @@ func NewLinkService(repo Repository) Service {
 // GetLink returns a link by the ID
 func (s *linkService) GetLink(linkId uuid.UUID) (*domain.Link, error) {
 	return s.repo.FindByID(linkId)
+}
+
+// GetLinkByShortened returns a link by the shortened URL
+func (s *linkService) GetLinkByShortened(shortened string) (*domain.Link, error) {
+	return s.repo.FindByShortened(shortened)
 }
 
 // ShortenURL creates a new shortened URL

@@ -57,6 +57,11 @@ func main() {
 		log.Fatalln("Error while migrating the LinksPage model")
 	}
 
+	// Auto migrate the Stats model
+	if err := db.AutoMigrate(&domain.Stats{}); err != nil {
+		log.Fatalln("Error while migrating the Stats model")
+	}
+
 	// Initialize the random number generator
 	rand.Seed(time.Now().UnixNano())
 
@@ -74,9 +79,9 @@ func main() {
 	s := link.NewLinkService(l)
 	lps := links_page.NewLinksPageService(lpr, s)
 	ss := stats.NewStatsService(sr)
-	lp := handler.NewLinksPageHandler(lps)
+	lp := handler.NewLinksPageHandler(lps, ss)
 	aS := apikey.NewApiKeyService(app)
-	h := handler.NewLinkHandler(s)
+	h := handler.NewLinkHandler(s, ss)
 	aH := handler.NewAPIKeyHandler(aS)
 	sh := handler.NewStatsHandler(ss)
 
@@ -107,7 +112,7 @@ func main() {
 
 	//
 	r.GET("/",
-		cache.CachePage(store, time.Minute*10, func(c *gin.Context) {
+		cache.CachePage(store, time.Minute*360, func(c *gin.Context) {
 			c.Redirect(http.StatusMovedPermanently, "https://5lnk.live/?source=api_endpoint")
 		}))
 
@@ -149,8 +154,36 @@ func main() {
 
 		st := api.Group("/stats")
 		{
+			st.GET("/link/:linkId",
+				cache.CachePage(store, time.Minute, sh.GetLinkStats()))
+		}
+		{
+			st.GET("/link/:linkId/stats",
+				cache.CachePage(store, time.Minute, sh.GetLinkStatsByDate()))
+		}
+		{
+			st.GET("/page/:pageId",
+				cache.CachePage(store, time.Minute, sh.GetPageStats()))
+		}
+		{
+			st.GET("/page/:pageId/stats",
+				cache.CachePage(store, time.Minute, sh.GetPageStatsByDate()))
+		}
+		{
 			st.GET("/user/:userId",
+				cache.CachePage(store, time.Minute, sh.GetStatsByUserId()))
+		}
+		{
+			st.GET("/user/:userId/overview",
 				cache.CachePage(store, time.Minute, sh.GetUserStatsOverview()))
+		}
+		{
+			st.GET("/user/:userId/links",
+				cache.CachePage(store, time.Minute, sh.GetLinkStatsByUserIdAndDate()))
+		}
+		{
+			st.GET("/user/:userId/pages",
+				cache.CachePage(store, time.Minute, sh.GetPageStatsByUserIdAndDate()))
 		}
 	}
 
