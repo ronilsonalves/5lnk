@@ -109,6 +109,33 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  /*
+   * If the request has a pageId parameter, it means that the user is trying to get a specific page
+   */
+  if (request.nextUrl.searchParams.has("pageId")) {
+    const apiResponse = await fetch(
+      process.env.NEXT_BACKEND_API_URL +
+        "pages/id/" +
+        request.nextUrl.searchParams.get("pageId"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: tokens.token,
+        },
+      }
+    );
+
+    const data = await apiResponse.json();
+
+    return new NextResponse(JSON.stringify(data), {
+      status: apiResponse.status,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
   const apiResponse = await fetch(
     process.env.NEXT_BACKEND_API_URL +
       "pages/user/" +

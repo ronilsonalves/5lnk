@@ -147,6 +147,7 @@ func main() {
 		{
 			linksPage.POST("", lp.PostPage())
 			linksPage.GET(":alias", lp.GetPageByAlias())
+			linksPage.GET("/id/:id", lp.GetPageByID())
 			linksPage.GET("/user/:userId", lp.GetAllPagesByUser())
 			linksPage.PUT("", lp.Update())
 			linksPage.DELETE("", lp.Delete())

@@ -2,6 +2,7 @@ package links_page
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/ronilsonalves/5lnk/internal/domain"
 	"github.com/ronilsonalves/5lnk/internal/link"
 	"github.com/ronilsonalves/5lnk/internal/utils"
@@ -15,6 +16,7 @@ import (
 type Service interface {
 	Create(request web.CreateLinksPage) (domain.LinksPage, error)
 	GetLinksPageByAlias(address string) (*domain.LinksPage, error)
+	GetLinksPageByID(id uuid.UUID) (domain.LinksPage, error)
 	GetAllByUser(userId string) (*[]domain.LinksPage, error)
 	Update(request domain.LinksPage) (domain.LinksPage, error)
 	Delete(request domain.LinksPage) error
@@ -33,6 +35,11 @@ func NewLinksPageService(r Repository, ls link.Service) Service {
 // GetLinksPageByAlias returns a linksPage by the alias
 func (s *linksPageService) GetLinksPageByAlias(address string) (*domain.LinksPage, error) {
 	return s.r.FindByAlias(address)
+}
+
+// GetLinksPageByID returns a linksPage by the ID
+func (s *linksPageService) GetLinksPageByID(id uuid.UUID) (domain.LinksPage, error) {
+	return s.r.FindById(id)
 }
 
 // GetAllByUser finds all linksPage by user

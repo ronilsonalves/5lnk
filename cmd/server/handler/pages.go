@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/ronilsonalves/5lnk/internal/domain"
 	linkspage "github.com/ronilsonalves/5lnk/internal/links-page"
 	"github.com/ronilsonalves/5lnk/internal/stats"
@@ -100,6 +101,44 @@ func (h *linksPageHandler) GetPageByAlias() gin.HandlerFunc {
 				log.Printf("ERROR: unable to register page view due to %v", err.Error())
 			}
 		}()
+
+		web.ResponseOK(ctx, http.StatusOK, response)
+	}
+}
+
+// GetPageByID returns a linksPage by ID.
+// @BasePath /api/v1
+// GetPageByID godoc
+// @Summary Get a linksPage
+// @Schemes
+// @Description Get a linksPage by ID.
+// @Tags Pages
+// @Accept json
+// @Produce json
+// @Param id path string true "Page ID"
+// @Success 200 {object} domain.LinksPage
+// @Failure 400 {object} web.errorResponse
+// @Failure 401 {object} web.errorResponse
+// @Failure 404 {object} web.errorResponse
+// @Failure 500 {object} web.errorResponse
+// @Router /api/v1/pages/id/{id} [GET]
+func (h *linksPageHandler) GetPageByID() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		id, err := uuid.Parse(ctx.Param("id"))
+		if err != nil {
+			log.Printf("error while parsing uuid: %v", err.Error())
+			web.BadResponse(ctx, http.StatusBadRequest, "error", "invalid UUID provided")
+			return
+		}
+		response, err := h.s.GetLinksPageByID(id)
+		if err != nil {
+			if err.Error() == "record not found" {
+				web.BadResponse(ctx, http.StatusNotFound, "error", fmt.Errorf("the linksPage `%s` not found", id).Error())
+				return
+			}
+			web.BadResponse(ctx, http.StatusInternalServerError, "error", err.Error())
+			return
+		}
 
 		web.ResponseOK(ctx, http.StatusOK, response)
 	}

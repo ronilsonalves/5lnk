@@ -1,4 +1,5 @@
 import LinksPage from "@/types/LinksPage";
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 /**
  * Retrieves a page by its slug.
@@ -39,5 +40,28 @@ export const getPages = async (userAccessToken: string): Promise<LinksPage[]> =>
     } catch (e) {
         // TODO: Apply better error handling
         throw new Error('Unable to fetch data');
+    }
+};
+
+export const getAsyncPageById = async (id: string, reqCookies: RequestCookie[]): Promise<LinksPage> => {
+    // Remove the edge-verified cookie from the request to prevent a 500 while middleware try to verify the cookie
+    reqCookies = reqCookies.filter((c) => c.name !== 'x-next-firebase-auth-edge-verified');
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/pages/?pageId=${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Cookie: reqCookies.map((c) => `${c.name}=${c.value}`).join("; "),
+            },
+            credentials: "same-origin",
+            cache: "no-cache",
+        });
+        const data = await response.json();
+        return data as LinksPage;
+    } catch (e) {
+        if (e instanceof Error) {
+            console.error(e.message);
+        }
+        return {} as LinksPage;
     }
 };
