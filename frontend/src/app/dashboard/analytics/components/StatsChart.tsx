@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { StatsByDate } from "@/types/Stats";
 import {
   generateGroupedOptions,
@@ -14,9 +15,19 @@ interface StatsChartProps {
   stats: StatsByDate[];
   type: "Links" | "Pages";
   height?: number;
-};
+}
 
 const StatsChart: React.FC<StatsChartProps> = ({ stats, type, height }) => {
+  // Check if stats is empty
+  if (!stats || stats.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96">
+        <InformationCircleIcon className="w-24 h-24 text-gray-400" />
+        <p className="text-2xl text-gray-400">No stats to show</p>
+      </div>
+    )
+  }
+
   const os = generateStatsArrayWithoutDuplicates(stats, "os");
   const browsers = generateStatsArrayWithoutDuplicates(stats, "browser");
   const osOptions = generateGroupedOptions(

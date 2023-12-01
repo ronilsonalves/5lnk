@@ -9,7 +9,6 @@ import {
   Bars3Icon,
   ChartPieIcon,
   Cog6ToothIcon,
-  FolderIcon,
   HomeIcon,
   LinkIcon,
   RectangleGroupIcon,
@@ -32,34 +31,34 @@ export default function Base({ children }: { children: React.ReactNode }) {
       name: "Dashboard",
       href: "/dashboard",
       icon: HomeIcon,
-      current: true && pathname === "/dashboard",
+      current: pathname === "/dashboard",
       enabled: true,
     },
     {
       name: "Links",
       href: "/dashboard/links",
       icon: LinkIcon,
-      current: true && pathname === "/dashboard/links",
+      current: pathname.startsWith("/dashboard/links"),
       enabled: true,
     },
     {
       name: "Links Pages",
       href: "/dashboard/pages",
       icon: RectangleGroupIcon,
-      current: true && pathname === "/dashboard/pages",
+      current: pathname.startsWith("/dashboard/pages"),
       enabled: true,
     },
     {
       name: "Analytics",
       href: "/dashboard/analytics",
       icon: ChartPieIcon,
-      current: true && pathname === "/dashboard/analytics",
+      current: pathname === "/dashboard/analytics",
       enabled: true,
     },
   ];
 
   return (
-    <>
+
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
@@ -245,6 +244,6 @@ export default function Base({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </div>
-    </>
+
   );
 }
