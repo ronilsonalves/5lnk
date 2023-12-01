@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { authConfig } from "@/config/server-config";
-import { getTokens } from "next-firebase-auth-edge/lib/next/tokens";
+import {NextRequest, NextResponse} from "next/server";
+import {authConfig} from "@/config/server-config";
+import {getTokens} from "next-firebase-auth-edge/lib/next/tokens";
 
 export async function POST(request: NextRequest) {
   const tokens = await getTokens(request.cookies, authConfig);
@@ -40,14 +40,12 @@ export async function POST(request: NextRequest) {
 
   const data = await apiResponse.json();
 
-  const response = new NextResponse(JSON.stringify(data), {
+  return new NextResponse(JSON.stringify(data), {
     status: apiResponse.status,
     headers: {
       "Content-Type": "application/json"
     }
   });
-
-  return response;
 }
 
 export async function GET(request: NextRequest) {
@@ -59,6 +57,29 @@ export async function GET(request: NextRequest) {
       status: 401,
       headers: {
         "Content-Type": "application/json",
+      }
+    });
+  }
+
+  if (request.nextUrl.searchParams.has("linkId")) {
+    console.log("linkId: " + request.nextUrl.searchParams.get("linkId"));
+    const linkId = request.nextUrl.searchParams.get("linkId");
+    
+    const apiResponse = await fetch(
+      process.env.NEXT_BACKEND_API_URL + "links/" + linkId,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + tokens.token,
+        },
+      }
+    );
+    const data = await apiResponse.json();
+    return new NextResponse(JSON.stringify(data), {
+      status: apiResponse.status,
+      headers: {
+        "Content-Type": "application/json"
       }
     });
   }
@@ -76,14 +97,12 @@ export async function GET(request: NextRequest) {
 
   const data = await apiResponse.json();
 
-  const response = new NextResponse(JSON.stringify(data), {
+  return new NextResponse(JSON.stringify(data), {
     status: apiResponse.status,
     headers: {
       "Content-Type": "application/json"
     }
   });
-
-  return response;
 }
 
 export async function PUT(request: NextRequest) {
@@ -127,14 +146,12 @@ export async function PUT(request: NextRequest) {
 
   const data = await backendResponse.json();
 
-  const response = new NextResponse(JSON.stringify(data), {
+  return new NextResponse(JSON.stringify(data), {
     status: backendResponse.status,
     headers: {
       "Content-Type": "application/json"
     }
   });
-
-  return response;
 }
 
 export async function DELETE(request: NextRequest) {

@@ -10,27 +10,7 @@ export async function GET(request: NextRequest) {
   const pageId = request.nextUrl.searchParams.get("pageId");
   const objectToFetch = request.nextUrl.searchParams.get("fetch");
 
-  if (linkId) {
-    const apiResponse = await fetch(
-      process.env.NEXT_BACKEND_API_URL + "stats/link/" + linkId + "/stats",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + process.env.NEXT_FRONTEND_API_KEY,
-        },
-      }
-    );
-
-    const data = await apiResponse.json();
-
-    return new NextResponse(JSON.stringify(data), {
-      status: apiResponse.status,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  }
+  console.log("INFO: Fetching stats for " + objectToFetch);
 
   if (pageId) {
     const apiResponse = await fetch(
@@ -69,6 +49,29 @@ export async function GET(request: NextRequest) {
         },
       }
     );
+  }
+
+  if (linkId) {
+    console.log("INFO: Fetching stats for link " + linkId);
+    const apiResponse = await fetch(
+      process.env.NEXT_BACKEND_API_URL + "stats/link/" + linkId + "/stats",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + tokens.token,
+        },
+      }
+    );
+
+    const data = await apiResponse.json();
+
+    return new NextResponse(JSON.stringify(data), {
+      status: apiResponse.status,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   }
 
   if (analytics) {

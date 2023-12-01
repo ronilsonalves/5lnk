@@ -6,7 +6,7 @@ import Head from "@dashboard/components/Head";
 import StatsChart from "@dashboard/analytics/components/StatsChart";
 import Details from "@dashboard/pages/components/Details";
 import { getAsyncPageById } from "@/lib/hooks/usePages";
-import { getPageStatsByDate } from "@/lib/hooks/useStats";
+import { getStatsByDate } from "@/lib/hooks/useStats";
 
 import LinksPage from "@/types/LinksPage";
 import { StatsByDate } from "@/types/Stats";
@@ -40,7 +40,7 @@ async function fetchPageData(id: string): Promise<LinksPage> {
 
 async function fetchPageStats(id: string): Promise<StatsByDate[]> {
   const reqCookies = cookies().getAll();
-  return getPageStatsByDate(id, reqCookies);
+  return getStatsByDate(id, "page", reqCookies);
 }
 
 export default async function PageOverviewPage({

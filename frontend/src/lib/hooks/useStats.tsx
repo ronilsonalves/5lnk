@@ -1,4 +1,5 @@
-import Stats, { LinkStats, LinkStatsByDate, StatsByDate } from "@/types/Stats";
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import Stats, { StatsByDate } from "@/types/Stats";
 
 export const getUserOverviewStats = async (
   userAccessToken: string,
@@ -66,45 +67,25 @@ export const getUserOverviewStatsFunc = async (): Promise<Stats> => {
   }
 };
 
-// export const getLinkStatsFunc = async (
-//   linkId: string
-// ): Promise<LinkStats[]> => {
-//   try {
-//     const response = await fetch(
-//       `${process.env.NEXT_PUBLIC_SITE_URL}/api/stats/?linkId=${linkId}`,
-//       {
-//         method: "GET",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-//     const data = await response.json();
-//     return data.data as LinkStats[];
-//   } catch (e) {
-//     console.error(e);
-//     return {} as LinkStats[];
-//   }
-// };
-
-// export const getLinkStatsByDate = async (
-//   linkId: string
-// ): Promise<LinkStatsByDate[]> => {
-//   try {
-//     const response = await fetch(
-//       `${process.env.NEXT_PUBLIC_SITE_URL}/api/stats/?linkId=${linkId}`,
-//       {
-//         method: "GET",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         cache: "no-cache",
-//       }
-//     );
-//     const data = await response.json();
-//     return data as LinkStatsByDate[];
-//   } catch (e) {
-//     console.error(e);
-//     return {} as LinkStatsByDate[];
-//   }
-// };
+export const getStatsByDate = async (identifier: string, type: "link" | "page", reqCookies: RequestCookie[]): Promise<StatsByDate[]> => {
+  reqCookies = reqCookies.filter((c) => c.name !== 'x-next-firebase-auth-edge-verified');
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/stats/?${type}Id=${identifier}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: reqCookies.map((c) => `${c.name}=${c.value}`).join("; "),
+        },
+        credentials: "same-origin",
+        cache: "no-cache",
+      }
+    );
+    const data = await response.json();
+    return data as StatsByDate[];
+  } catch (e) {
+    console.error(e);
+    return {} as StatsByDate[];
+  }
+};
