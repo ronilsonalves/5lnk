@@ -11,7 +11,7 @@ const Links: React.FC<LinksProps> = ({ links }) => {
     <div className="join join-vertical">
       {links.map((link) => (
         <Link
-          className="btn btn-primary my-2 flex flex-row justify-start items-center h-14 w-80 shadow-md rounded-md hover:animate-pulse"
+          className="btn btn-primary my-2 flex flex-row justify-start items-center h-14 md:w-96 shadow-md rounded-md hover:animate-pulse"
           key={link.id}
           href={link.finalUrl}
           title={link.title}

@@ -12,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({
   avatarUrl,
 }) => {
   return (
-    <div className="max-w-md">
+    <div className="xs:max-w-xs">
       <Image
         className="mx-auto w-28 h-28 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"
         src={avatarUrl}

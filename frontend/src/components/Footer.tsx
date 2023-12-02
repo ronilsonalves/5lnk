@@ -91,7 +91,7 @@ export default function Footer() {
         </a>
       </div>
       <div>
-        <p>Copyright © 2023 - All right reserved.</p>
+        <p>Copyright © {new Date().getFullYear()} - All right reserved.</p>
         <p>
           Built with ❤️ and <b>Go Lang 1.20 + Next.js 13.5.6</b> by{" "}
           <a href="https://www.ronilsonalves.com/?source=5lnk.live">
@@ -101,7 +101,7 @@ export default function Footer() {
       </div>
       <div>
         <span>
-          <b>Version</b>: 0.3.2 from November, 23.
+          <b>Version</b>: 0.3.3
         </span>
       </div>
     </footer>
