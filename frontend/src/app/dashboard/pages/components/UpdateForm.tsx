@@ -2,11 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { MinusCircleIcon } from "@heroicons/react/24/outline";
+import { MinusCircleIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { array, object, string, ValidationError } from "yup";
 import FileUploader from "@/components/FileUploader";
 import LinksPage from "@/types/LinksPage";
 import Link from "@/types/Link";
+
+declare global {
+  interface Window {
+    delete_page_form: any;
+  }
+}
 
 interface UpdateFormProps {
   page: LinksPage;
@@ -191,6 +197,43 @@ export default function UpdateForm({
       }, 3000);
       setIsSubmitting(false);
     }
+  };
+
+  const handleDelete = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/pages", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(page),
+      });
+      const data = await response.json();
+
+      if (response.status !== 200) {
+        setError(data.details);
+        setIsSubmitting(false);
+        return;
+      }
+      setSuccess("Page deleted successfully");
+      window.delete_page_form.close();
+      setIsSubmitting(false);
+      return;
+    } catch (e) {
+      setError("Unable to delete your page.");
+      setIsSubmitting(false);
+      return;
+    }
+  };
+
+  const handleConfirmation = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const confirmation = (e.target as HTMLFormElement).confirmation.value;
+    if (confirmation === page.alias) {
+      handleDelete();
+    }
+    (e.target as HTMLFormElement).reset();
   };
 
   const handleChanges = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -428,26 +471,95 @@ export default function UpdateForm({
           Add new link
         </button>
       </div>
-      {isSubmitting ? (
-        <button
-          type="submit"
-          className="btn btn-primary rounded-full w-full"
-          disabled={true}
-        >
-          <div
-            className="loading loading-spinner loading-lg"
-            title="Updating page..."
-          ></div>
-        </button>
-      ) : (
-        <button
-          type="submit"
-          className="btn btn-primary rounded-full w-full"
-          disabled={formErrors.alias !== undefined}
-        >
-          Update page
-        </button>
-      )}
+      <div className="grid grid-cols-1 grid-flow-row gap-2 sm:grid-flow-col">
+        {isSubmitting ? (
+          <>
+            <button
+              type="button"
+              className="btn btn-error rounded-xl w-full sm:w-1/3"
+              disabled={true}
+            >
+              <div className="loading loading-spinner loading-lg"></div>
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary rounded-xl w-full"
+              disabled={true}
+            >
+              <div
+                className="loading loading-spinner loading-lg"
+                title="Updating page..."
+              ></div>
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="btn btn-error rounded-xl w-full sm:w-1/3"
+              disabled={formErrors.alias !== undefined}
+              onClick={() => window.delete_page_form.showModal()}
+            >
+              Delete page
+            </button>
+            {/* Dialog for delete modal */}
+            <dialog id="delete_page_form" className="modal">
+              <form
+                method="dialog"
+                className="modal-box"
+                onSubmit={handleConfirmation}
+              >
+                <h3 className="font-bold text-lg">
+                  Are you sure you want to delete this page?
+                </h3>
+                <p className="py-4">
+                  Please, to confirm the exclusion of the page, type the page's
+                  alias [ <i>{page.alias}</i> ] address below. Remember, this
+                  action is irreversible.
+                </p>
+                <div className="join w-full">
+                  <input
+                    name="confirmation"
+                    type="text"
+                    placeholder="Page's alias"
+                    className="input input-bordered join-item rounded-l-full w-full"
+                    required={true}
+                  />
+                  {isSubmitting ? (
+                    <button
+                      type="submit"
+                      className="btn join-item rounded-r-full w-1/4"
+                      disabled={true}
+                    >
+                      <div
+                        className="loading loading-spinner loading-lg"
+                        title="Deleting Page..."
+                      ></div>
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      className="btn join-item rounded-r-full w-1/4"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              </form>
+              <form method="dialog" className="modal-backdrop">
+                <button>Cancel</button>
+              </form>
+            </dialog>
+            <button
+              type="submit"
+              className="btn btn-primary rounded-xl w-full"
+              disabled={formErrors.alias !== undefined}
+            >
+              Update page
+            </button>
+          </>
+        )}
+      </div>
       {error && (
         <div className="toast toast-end">
           <div className="alert alert-error">
